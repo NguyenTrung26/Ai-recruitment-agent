@@ -1,0 +1,24 @@
+<!-- Jobs Section -->
+<section class="section jobs" id="jobs">
+    <div class="container">
+        <div class="section-title">
+            <h2>Vị Trí Tuyển Dụng</h2>
+            <p>Tìm công việc phù hợp với bạn</p>
+        </div>
+
+        <div class="jobs-filter">
+            <button class="filter-btn active" data-filter="all">Tất Cả</button>
+            <button class="filter-btn" data-filter="engineering">Engineering</button>
+            <button class="filter-btn" data-filter="design">Design</button>
+            <button class="filter-btn" data-filter="product">Product</button>
+            <button class="filter-btn" data-filter="marketing">Marketing</button>
+        </div>
+
+        <div class="jobs-grid" id="jobsGrid">
+            <!-- Jobs will be loaded dynamically from jobs.js -->
+        </div>
+    </div>
+</section>
+
+<script src="data/jobs.js"></script>
+<script src="js/jobs-loader.js"></script>

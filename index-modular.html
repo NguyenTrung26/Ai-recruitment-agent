@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TechVision - Công ty công nghệ hàng đầu, tạo ra giải pháp đổi mới cho tương lai">
+    <title>TechVision - Công Ty Công Nghệ Hàng Đầu</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Load Sections -->
+    <div id="navbar-section"></div>
+    <div id="hero-section"></div>
+    <div id="about-section"></div>
+    <div id="culture-section"></div>
+    <div id="jobs-section"></div>
+    <div id="apply-section"></div>
+    <div id="footer-section"></div>
+    <div id="widgets-section"></div>
+
+    <!-- Section Loader Script -->
+    <script>
+        // Load HTML sections dynamically
+        async function loadSection(sectionId, filePath) {
+            try {
+                const response = await fetch(filePath);
+                const html = await response.text();
+                document.getElementById(sectionId).innerHTML = html;
+            } catch (error) {
+                console.error(`Error loading ${filePath}:`, error);
+            }
+        }
+
+        // Load all sections
+        async function loadAllSections() {
+            await Promise.all([
+                loadSection('navbar-section', 'sections/navbar.html'),
+                loadSection('hero-section', 'sections/hero.html'),
+                loadSection('about-section', 'sections/about.html'),
+                loadSection('culture-section', 'sections/culture.html'),
+                loadSection('jobs-section', 'sections/jobs.html'),
+                loadSection('apply-section', 'sections/apply.html'),
+                loadSection('footer-section', 'sections/footer.html'),
+                loadSection('widgets-section', 'sections/widgets.html')
+            ]);
+
+            // Load main script after all sections are loaded
+            const script = document.createElement('script');
+            script.src = 'script.js';
+            document.body.appendChild(script);
+        }
+
+        // Load sections when DOM is ready
+        document.addEventListener('DOMContentLoaded', loadAllSections);
+    </script>
+
+</body>
+
+</html>

@@ -18,8 +18,8 @@ export interface ParsedCv {
   text: string;
   meta: {
     pages?: number;
-    fileName?: string;
-    mimeType?: string;
+    fileName?: string | undefined;
+    mimeType?: string | undefined;
     size?: number;
     fileType?: string;
   };
@@ -28,16 +28,20 @@ export interface ParsedCv {
 
 export const parsePdfBuffer = async (
   buffer: Buffer,
-  meta?: { fileName?: string; mimeType?: string; size?: number }
+  meta?: {
+    fileName?: string | undefined;
+    mimeType?: string | undefined;
+    size?: number | undefined;
+  }
 ): Promise<ParsedCv> => {
   const parsed = await (pdfParse as any)(buffer);
   return {
     text: parsed.text || "",
     meta: {
       pages: parsed.numpages,
-      fileName: meta?.fileName || undefined,
-      mimeType: meta?.mimeType || undefined,
-      size: meta?.size || undefined,
+      fileName: meta?.fileName,
+      mimeType: meta?.mimeType,
+      size: meta?.size ?? buffer.length,
       fileType: "pdf",
     },
   };
@@ -45,15 +49,19 @@ export const parsePdfBuffer = async (
 
 export const parseDocxBuffer = async (
   buffer: Buffer,
-  meta?: { fileName?: string; mimeType?: string; size?: number }
+  meta?: {
+    fileName?: string | undefined;
+    mimeType?: string | undefined;
+    size?: number | undefined;
+  }
 ): Promise<ParsedCv> => {
   const result = await mammoth.extractRawText({ buffer });
   return {
     text: result.value,
     meta: {
-      fileName: meta?.fileName || undefined,
-      mimeType: meta?.mimeType || undefined,
-      size: meta?.size || buffer.length,
+      fileName: meta?.fileName,
+      mimeType: meta?.mimeType,
+      size: meta?.size ?? buffer.length,
       fileType: "docx",
     },
   };
@@ -81,8 +89,8 @@ export const downloadAndParseCv = async (
   const buffer = Buffer.from(await data.arrayBuffer());
   const ext = storagePath.split(".").pop()?.toLowerCase();
 
-  const meta = {
-    fileName: storagePath.split("/").pop() || undefined,
+  const meta: { fileName?: string | undefined; size: number } = {
+    fileName: storagePath.split("/").pop(),
     size: buffer.length,
   };
 

@@ -1,13 +1,39 @@
 import { Router } from "express";
-import multer from "multer";
-import { handleApplication } from "../controllers/candidate.controller.js";
+import {
+  intakeCandidate,
+  enqueueAnalysisAfterUpload,
+  getCandidates,
+  getCandidateById,
+  updateCandidateStatus,
+} from "../controllers/candidate.controller.ts";
+import { apiKeyAuth } from "../middleware/index.ts";
 
 const router = Router();
-const storage = multer.memoryStorage(); // Lưu file vào bộ nhớ để xử lý
-const upload = multer({ storage });
 
-router.post("/apply", upload.single("cvFile"), (req, res, next) =>
-  handleApplication(req as any, res).catch(next)
+// Step 1: Intake metadata, return signed upload URL
+router.post("/candidates/intake", apiKeyAuth, intakeCandidate);
+
+// Step 2: Confirm upload & enqueue analysis
+router.post(
+  "/candidates/:id/ingest",
+  apiKeyAuth,
+  enqueueAnalysisAfterUpload
 );
+
+// Alias route for n8n workflow compatibility
+router.post(
+  "/candidates/:id/enqueue",
+  apiKeyAuth,
+  enqueueAnalysisAfterUpload
+);
+
+// Get all candidates
+router.get("/candidates", getCandidates);
+
+// Get candidate by ID
+router.get("/candidates/:id", getCandidateById);
+
+// Update candidate status
+router.patch("/candidates/:id/status", updateCandidateStatus);
 
 export default router;

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { config } from "../config.js";
+import { config } from "../config.ts";
 
 export const triggerN8nWorkflow = async (payload: any) => {
   if (!config.n8n.webhookUrl) {

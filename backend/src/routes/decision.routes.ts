@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
-import { supabase } from "../services/supabase.service.ts";
-import { logger } from "../services/logger.service.ts";
-import { sendEmail } from "../services/notification.service.ts";
+import { supabase } from "../services/supabase.service.js";
+import { logger } from "../services/logger.service.js";
+import { sendEmail } from "../services/notification.service.js";
 
 const router = Router();
 
@@ -87,11 +87,12 @@ router.post("/approve", async (req: Request, res: Response) => {
         email: candidate.email,
       },
     });
-  } catch (error: any) {
-    logger.error({ error: error.message }, "Approve endpoint error");
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error({ error: errorMessage }, "Approve endpoint error");
     return res.status(500).json({
       error: "Internal server error",
-      details: error.message,
+      details: errorMessage,
     });
   }
 });
@@ -166,11 +167,12 @@ router.post("/reject", async (req: Request, res: Response) => {
         email: candidate.email,
       },
     });
-  } catch (error: any) {
-    logger.error({ error: error.message }, "Reject endpoint error");
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error({ error: errorMessage }, "Reject endpoint error");
     return res.status(500).json({
       error: "Internal server error",
-      details: error.message,
+      details: errorMessage,
     });
   }
 });

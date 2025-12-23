@@ -9,9 +9,23 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+interface Candidate {
+  id: number;
+  full_name: string;
+  email: string;
+  ai_score?: number;
+  status: string;
+}
+
+interface Job {
+  id: number;
+  title: string;
+  [key: string]: unknown;
+}
+
 export default function Home() {
-  const [candidates, setCandidates] = useState<any[]>([]);
-  const [jobs, setJobs] = useState<any[]>([]);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,7 +88,7 @@ export default function Home() {
               High Scorers
             </h3>
             <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
-              {candidates.filter((c: any) => c.ai_score >= 8).length}
+              {candidates.filter((c: Candidate) => c.ai_score && c.ai_score >= 8).length}
             </p>
           </div>
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-6">
@@ -82,7 +96,7 @@ export default function Home() {
               Processing
             </h3>
             <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-              {candidates.filter((c: any) => c.status === "processing").length}
+              {candidates.filter((c: Candidate) => c.status === "processing").length}
             </p>
           </div>
         </div>
@@ -147,7 +161,7 @@ export default function Home() {
                 No candidates yet. Upload CVs to get started.
               </div>
             ) : (
-              candidates.map((candidate: any) => (
+              candidates.map((candidate: Candidate) => (
                 <Link href={`/admin/${candidate.id}`} key={candidate.id}>
                   <div className="p-6 hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition">
                     <div className="flex items-center justify-between">

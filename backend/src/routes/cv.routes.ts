@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import axios from "axios";
-import { supabase } from "../services/supabase.service.ts";
-import { logger } from "../services/logger.service.ts";
+import { supabase } from "../services/supabase.service.js";
+import { logger } from "../services/logger.service.js";
 
 const router = Router();
 
@@ -38,8 +38,9 @@ router.get("/:candidateId/preview", async (req: Request, res: Response) => {
     });
 
     res.send(pdfResponse.data);
-  } catch (error: any) {
-    logger.error({ error: error.message }, "CV preview error");
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error({ error: errorMessage }, "CV preview error");
     res.status(500).json({ error: "Failed to load CV" });
   }
 });
@@ -75,8 +76,9 @@ router.get("/:candidateId/download", async (req: Request, res: Response) => {
     });
 
     res.send(pdfResponse.data);
-  } catch (error: any) {
-    logger.error({ error: error.message }, "CV download error");
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logger.error({ error: errorMessage }, "CV download error");
     res.status(500).json({ error: "Failed to download CV" });
   }
 });

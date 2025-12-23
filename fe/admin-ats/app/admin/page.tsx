@@ -1,6 +1,16 @@
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
+interface Candidate {
+  id: number;
+  full_name: string;
+  email: string;
+  ai_score?: number;
+  status: string;
+  job_id?: number;
+  [key: string]: unknown;
+}
+
 export default async function AdminPage() {
   const { data: candidates, error } = await supabase
     .from("candidates")
@@ -37,7 +47,7 @@ export default async function AdminPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {candidates.map((c: any) => (
+            {candidates.map((c: Candidate) => (
               <Link
                 key={c.id}
                 href={`/admin/${c.id}`}

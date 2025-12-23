@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+interface RequestBody {
+  candidateId: number;
+  interviewDate?: string;
+  interviewTime?: string;
+}
+
 export default function ActionButtons({
   candidateId,
   candidateEmail,
@@ -28,7 +34,7 @@ export default function ActionButtons({
 
     try {
       const endpoint = `/api/decision/${decision}`;
-      const body: any = {
+      const body: RequestBody = {
         candidateId:
           typeof candidateId === "string" ? parseInt(candidateId) : candidateId,
       };

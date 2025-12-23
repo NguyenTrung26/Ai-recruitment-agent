@@ -1,7 +1,12 @@
 import { supabase } from "@/lib/supabase";
 import ActionButtons from "./ActionButtons";
+import Link from "next/link";
 
-export default async function CandidateDetail({ params }: any) {
+interface PageParams {
+  params: Promise<{ id: string }>;
+}
+
+export default async function CandidateDetail({ params }: PageParams) {
   try {
     // Fix: Next.js 15+ requires awaiting params
     const { id } = await params;
@@ -28,12 +33,12 @@ export default async function CandidateDetail({ params }: any) {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               ID: {id} - Could not load candidate information
             </p>
-            <a
+            <Link
               href="/admin"
               className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
             >
               ← Back to Candidates
-            </a>
+            </Link>
           </div>
         </div>
       );
@@ -192,12 +197,12 @@ export default async function CandidateDetail({ params }: any) {
           <p className="text-red-600 dark:text-red-400 mb-6">
             {error instanceof Error ? error.message : "Unknown error"}
           </p>
-          <a
+          <Link
             href="/admin"
             className="inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
           >
             ← Back to Candidates
-          </a>
+          </Link>
         </div>
       </div>
     );

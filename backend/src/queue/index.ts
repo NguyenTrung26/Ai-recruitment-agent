@@ -1,12 +1,12 @@
 import { Queue, Worker, QueueEvents } from "bullmq";
 import IORedis from "ioredis";
-import { analyzeCandidateJob, type AnalyzeCandidatePayload } from "../jobs/analyzeCandidate.ts";
-import { config } from "../config.ts";
-import { logger } from "../services/logger.service.ts";
+import { analyzeCandidateJob, type AnalyzeCandidatePayload } from "../jobs/analyzeCandidate.js";
+import { config } from "../config.js";
+import { logger } from "../services/logger.service.js";
 
 const connection = new IORedis(config.redis.url, {
   maxRetriesPerRequest: null, // required by BullMQ
-  retryStrategy: (times) => {
+  retryStrategy: (times: number) => {
     const delay = Math.min(times * 1000, 10000);
     logger.warn(`Redis connection retry attempt ${times}, delay ${delay}ms`);
     return delay;
@@ -17,7 +17,7 @@ connection.on("connect", () => {
   logger.info("Redis connected for BullMQ");
 });
 
-connection.on("error", (error) => {
+connection.on("error", (error: Error) => {
   logger.error({ error: error.message }, "Redis connection error");
 });
 

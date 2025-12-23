@@ -1,10 +1,10 @@
 import { Queue, Worker, QueueEvents } from "bullmq";
-import IORedis from "ioredis";
+import Redis from "ioredis";
 import { analyzeCandidateJob, type AnalyzeCandidatePayload } from "../jobs/analyzeCandidate.js";
 import { config } from "../config.js";
 import { logger } from "../services/logger.service.js";
 
-const connection = new IORedis(config.redis.url, {
+const connection = new Redis(config.redis.url, {
   maxRetriesPerRequest: null, // required by BullMQ
   retryStrategy: (times: number) => {
     const delay = Math.min(times * 1000, 10000);

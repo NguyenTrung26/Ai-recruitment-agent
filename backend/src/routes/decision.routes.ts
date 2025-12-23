@@ -60,13 +60,27 @@ router.post("/approve", async (req: Request, res: Response) => {
     const newStatus = interviewDate
       ? "interview-scheduled"
       : "screening-passed";
-    const { error: updateError } = await supabase
+    let { error: updateError } = await supabase
       .from("candidates")
       .update({
         status: newStatus,
-        updated_at: new Date().toISOString(),
       })
       .eq("id", numericCandidateId);
+
+    // If status violates a DB CHECK constraint, retry with a safer status
+    if (updateError && (updateError as any)?.code === "23514") {
+      logger.warn(
+        { updateError, fallbackStatus: "screening-passed" },
+        "Status not allowed, retrying with fallback"
+      );
+      const retry = await supabase
+        .from("candidates")
+        .update({
+          status: "screening-passed",
+        })
+        .eq("id", numericCandidateId);
+      updateError = retry.error;
+    }
 
     if (updateError) {
       logger.error({ updateError }, "Failed to update candidate status");
@@ -143,6 +157,14 @@ router.post("/reject", async (req: Request, res: Response) => {
   try {
     const { candidateId } = req.body;
 
+    const numericCandidateId = Number(candidateId);
+    if (!Number.isFinite(numericCandidateId)) {
+      return res.status(400).json({
+        error: "candidateId must be a valid number",
+        details: { candidateId },
+      });
+    }
+
     if (!candidateId) {
       return res.status(400).json({ error: "candidateId is required" });
     }
@@ -151,7 +173,7 @@ router.post("/reject", async (req: Request, res: Response) => {
     const { data: candidate, error: fetchError } = await supabase
       .from("candidates")
       .select("id, full_name, email")
-      .eq("id", candidateId)
+      .eq("id", numericCandidateId)
       .single();
 
     if (fetchError || !candidate) {
@@ -163,13 +185,20 @@ router.post("/reject", async (req: Request, res: Response) => {
       .from("candidates")
       .update({
         status: "rejected",
-        updated_at: new Date().toISOString(),
       })
-      .eq("id", candidateId);
+      .eq("id", numericCandidateId);
 
     if (updateError) {
       logger.error({ updateError }, "Failed to update candidate status");
-      return res.status(500).json({ error: "Failed to update candidate" });
+      return res.status(500).json({
+        error: "Failed to update candidate",
+        details: {
+          message: updateError.message,
+          details: (updateError as any)?.details,
+          hint: (updateError as any)?.hint,
+          code: updateError.code,
+        },
+      });
     }
 
     // Send rejection email

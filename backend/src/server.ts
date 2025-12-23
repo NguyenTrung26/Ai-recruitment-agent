@@ -11,6 +11,7 @@ import {
   requestLogger,
   corsMiddleware,
 } from "./middleware/index.ts";
+import { supabase } from "./services/supabase.service.ts";
 
 const app = express();
 
@@ -30,8 +31,55 @@ app.get("/", (req, res) => {
       jobs: "/api/jobs",
       statistics: "/api/statistics",
       ai: "/api/ai",
+      health: "/health",
     },
   });
+});
+
+// Supabase connection health check
+app.get("/health", async (req, res) => {
+  try {
+    // Test Supabase connection by querying candidates table
+    const { data, error, count } = await supabase
+      .from("candidates")
+      .select("id", { count: "exact" })
+      .limit(1);
+
+    if (error) {
+      console.error("Health check Supabase error:", error);
+      return res.status(503).json({
+        status: "unhealthy",
+        supabase: "disconnected",
+        error: error.message || String(error),
+        details: {
+          code: error.code,
+          hint: (error as any)?.hint,
+          details: (error as any)?.details,
+          raw: JSON.stringify(error),
+        },
+      });
+    }
+
+    res.json({
+      status: "healthy",
+      supabase: "connected",
+      database: "accessible",
+      timestamp: new Date().toISOString(),
+      candidatesCount: count || 0,
+      config: {
+        url: config.supabase.url,
+        bucket: config.supabase.bucket,
+      },
+    });
+  } catch (error: any) {
+    console.error("Health check exception:", error);
+    res.status(503).json({
+      status: "unhealthy",
+      supabase: "error",
+      error: error?.message || String(error),
+      stack: error?.stack,
+    });
+  }
 });
 
 // Routes

@@ -4,15 +4,15 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'backend/**'
-      - '.github/workflows/cd-backend-ghcr.yml'
+      - "backend/**"
+      - ".github/workflows/cd-backend-ghcr.yml"
 
 permissions:
   contents: read
   packages: write
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/ai-recruitment-backend
+  IMAGE_NAME: ghcr.io/nguyentrung26/ai-recruitment-backend
 
 jobs:
   build-and-push:

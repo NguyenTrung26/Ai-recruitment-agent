@@ -4,8 +4,8 @@ on:
   push:
     branches: ["main"]
     paths:
-      - 'backend/**'
-      - '.github/workflows/cd-backend-ghcr.yml'
+      - "backend/**"
+      - ".github/workflows/cd-backend-ghcr.yml"
 
 permissions:
   contents: read

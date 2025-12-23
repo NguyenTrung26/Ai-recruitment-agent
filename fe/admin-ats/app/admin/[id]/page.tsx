@@ -21,7 +21,7 @@ export default async function CandidateDetail({ params }: PageParams) {
       .select("*")
       .eq("id", candidateId)
       .single();
-
+    console.log("CV_URL_FROM_DB =", c?.cv_url);
     if (error || !c) {
       console.error("Candidate fetch error:", error);
       return (
@@ -43,6 +43,9 @@ export default async function CandidateDetail({ params }: PageParams) {
         </div>
       );
     }
+    const SUPABASE_URL = "https://axozefedjmitcbioidtj.supabase.co";
+
+    const cvPreviewUrl = `${SUPABASE_URL}/storage/v1/object/public/${c.cv_url}`;
 
     // Render candidate detail
     return (
@@ -149,7 +152,8 @@ export default async function CandidateDetail({ params }: PageParams) {
                       📄 CV Preview
                     </h2>
                     <a
-                      href={c.cv_url}
+                      //   href={c.cv_url}
+                      href={cvPreviewUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm font-medium"
@@ -162,7 +166,10 @@ export default async function CandidateDetail({ params }: PageParams) {
                     style={{ paddingBottom: "141.4%", minHeight: "400px" }}
                   >
                     <iframe
-                      src={`${c.cv_url}#toolbar=0`}
+                      //   src={`${c.cv_url}#toolbar=0`}
+                      src={`https://docs.google.com/gview?url=${encodeURIComponent(
+                        cvPreviewUrl
+                      )}&embedded=true`}
                       className="absolute top-0 left-0 w-full h-full border-0"
                       title="CV Preview"
                       allow="fullscreen"

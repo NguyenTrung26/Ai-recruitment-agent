@@ -13,6 +13,14 @@ router.post("/approve", async (req: Request, res: Response) => {
   try {
     const { candidateId, interviewDate, interviewTime } = req.body;
 
+    const numericCandidateId = Number(candidateId);
+    if (!Number.isFinite(numericCandidateId)) {
+      return res.status(400).json({
+        error: "candidateId must be a valid number",
+        details: { candidateId },
+      });
+    }
+
     if (!candidateId) {
       return res.status(400).json({ error: "candidateId is required" });
     }
@@ -21,27 +29,56 @@ router.post("/approve", async (req: Request, res: Response) => {
     const { data: candidate, error: fetchError } = await supabase
       .from("candidates")
       .select("id, full_name, email")
-      .eq("id", candidateId)
+      .eq("id", numericCandidateId)
       .single();
 
     if (fetchError || !candidate) {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    // Update candidate status
+    // If interview details are provided, create an entry in interview_schedules
+    if (interviewDate) {
+      const interviewISO = new Date(
+        `${interviewDate}T${interviewTime || "10:00"}:00Z`
+      ).toISOString();
+      const { error: scheduleError } = await supabase
+        .from("interview_schedules")
+        .insert({
+          candidate_id: numericCandidateId,
+          job_id: null,
+          interview_date: interviewISO,
+          interview_type: "technical",
+          status: "scheduled",
+        });
+
+      if (scheduleError) {
+        logger.warn({ scheduleError }, "Failed to create interview schedule");
+      }
+    }
+
+    // Update candidate status (align with defined enum values)
+    const newStatus = interviewDate
+      ? "interview-scheduled"
+      : "screening-passed";
     const { error: updateError } = await supabase
       .from("candidates")
       .update({
-        status: "approved",
-        interview_date: interviewDate || null,
-        interview_time: interviewTime || null,
+        status: newStatus,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", candidateId);
+      .eq("id", numericCandidateId);
 
     if (updateError) {
       logger.error({ updateError }, "Failed to update candidate status");
-      return res.status(500).json({ error: "Failed to update candidate" });
+      return res.status(500).json({
+        error: "Failed to update candidate",
+        details: {
+          message: updateError.message,
+          details: (updateError as any)?.details,
+          hint: (updateError as any)?.hint,
+          code: updateError.code,
+        },
+      });
     }
 
     // Send approval email
@@ -88,7 +125,8 @@ router.post("/approve", async (req: Request, res: Response) => {
       },
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     logger.error({ error: errorMessage }, "Approve endpoint error");
     return res.status(500).json({
       error: "Internal server error",
@@ -168,7 +206,8 @@ router.post("/reject", async (req: Request, res: Response) => {
       },
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     logger.error({ error: errorMessage }, "Reject endpoint error");
     return res.status(500).json({
       error: "Internal server error",

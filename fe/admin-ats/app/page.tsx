@@ -88,7 +88,7 @@ export default function Home() {
         </div>
 
         {/* Navigation Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Link href="/admin">
             <div className="bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-lg transition cursor-pointer p-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -99,6 +99,20 @@ export default function Home() {
               </p>
               <span className="text-blue-600 dark:text-blue-400 font-semibold">
                 View All →
+              </span>
+            </div>
+          </Link>
+
+          <Link href="/upload">
+            <div className="bg-white dark:bg-slate-800 rounded-lg shadow hover:shadow-lg transition cursor-pointer p-8">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                📤 Upload CV
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                Submit your CV for AI-powered screening and analysis
+              </p>
+              <span className="text-blue-600 dark:text-blue-400 font-semibold">
+                Apply Now →
               </span>
             </div>
           </Link>

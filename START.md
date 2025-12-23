@@ -61,15 +61,6 @@ npm run build
 npm start
 ```
 
-## Accessing the Application
-
-- **Frontend:** http://localhost:3000
-- **Backend API:** http://localhost:8080
-- **Health Check:** http://localhost:8080/
-
-## Environment Configuration
-
-Both `.env` files are already configured with:
 
 - ✅ Supabase credentials
 - ✅ Gemini API key
@@ -83,18 +74,15 @@ Both `.env` files are already configured with:
 - **Queue System:** BullMQ with Redis
 - **Database:** Supabase (PostgreSQL)
 - **AI Engine:** Gemini API
-- **Workflow:** n8n integration
 
 ## Troubleshooting
 
 If you encounter any issues:
-
 1. **Port already in use:**
 
    - Backend: Change `PORT` in `.env`
    - Frontend: Use `PORT=3001 npm run dev`
 
-2. **Redis connection error:**
 
    - Check Redis URL in `.env`
    - Ensure Redis is running
@@ -132,4 +120,4 @@ Run the SQL migrations if starting fresh:
 
 ---
 
-**Ready to go!** Your AI Recruitment Agent is now ready to run. 🚀
+

@@ -1,8 +1,11 @@
 import { Queue, Worker, QueueEvents } from "bullmq";
 import IORedis from "ioredis";
-import { analyzeCandidateJob, type AnalyzeCandidatePayload } from "../jobs/analyzeCandidate.js";
-import { config } from "../config.js";
-import { logger } from "../services/logger.service.js";
+import {
+  analyzeCandidateJob,
+  type AnalyzeCandidatePayload,
+} from "../jobs/analyzeCandidate.ts";
+import { config } from "../config.ts";
+import { logger } from "../services/logger.service.ts";
 
 const connection = new IORedis.default(config.redis.url, {
   maxRetriesPerRequest: null, // required by BullMQ
@@ -22,23 +25,26 @@ connection.on("error", (error: Error) => {
 });
 
 export const candidateQueueName = "candidate-analysis";
-export const candidateQueue = new Queue<AnalyzeCandidatePayload>(candidateQueueName, {
-  connection,
-  defaultJobOptions: {
-    attempts: 3,
-    backoff: {
-      type: "exponential",
-      delay: 5000,
+export const candidateQueue = new Queue<AnalyzeCandidatePayload>(
+  candidateQueueName,
+  {
+    connection,
+    defaultJobOptions: {
+      attempts: 3,
+      backoff: {
+        type: "exponential",
+        delay: 5000,
+      },
+      removeOnComplete: {
+        age: 24 * 3600, // keep for 24h
+        count: 100,
+      },
+      removeOnFail: {
+        age: 7 * 24 * 3600, // keep failed for 7 days
+      },
     },
-    removeOnComplete: {
-      age: 24 * 3600, // keep for 24h
-      count: 100,
-    },
-    removeOnFail: {
-      age: 7 * 24 * 3600, // keep failed for 7 days
-    },
-  },
-});
+  }
+);
 
 // Queue events for monitoring
 const queueEvents = new QueueEvents(candidateQueueName, { connection });
@@ -48,7 +54,10 @@ queueEvents.on("completed", ({ jobId }) => {
 });
 
 queueEvents.on("failed", ({ jobId, failedReason }) => {
-  logger.error({ jobId, failedReason, queue: candidateQueueName }, "Job failed");
+  logger.error(
+    { jobId, failedReason, queue: candidateQueueName },
+    "Job failed"
+  );
 });
 
 queueEvents.on("stalled", ({ jobId }) => {
@@ -66,20 +75,26 @@ const worker = new Worker(candidateQueueName, analyzeCandidateJob, {
 });
 
 worker.on("completed", (job) => {
-  logger.info({
-    jobId: job.id,
-    candidateId: job.data.candidateId,
-    duration: job.finishedOn ? job.finishedOn - (job.processedOn || 0) : 0,
-  }, "Worker completed job");
+  logger.info(
+    {
+      jobId: job.id,
+      candidateId: job.data.candidateId,
+      duration: job.finishedOn ? job.finishedOn - (job.processedOn || 0) : 0,
+    },
+    "Worker completed job"
+  );
 });
 
 worker.on("failed", (job, error) => {
-  logger.error({
-    jobId: job?.id,
-    candidateId: job?.data?.candidateId,
-    error: error.message,
-    attempts: job?.attemptsMade,
-  }, "Worker failed job");
+  logger.error(
+    {
+      jobId: job?.id,
+      candidateId: job?.data?.candidateId,
+      error: error.message,
+      attempts: job?.attemptsMade,
+    },
+    "Worker failed job"
+  );
 });
 
 worker.on("error", (error) => {
@@ -92,13 +107,16 @@ export const enqueueCandidateAnalysis = async (
   const job = await candidateQueue.add("analyze-candidate", payload, {
     jobId: `candidate-${payload.candidateId}-${Date.now()}`,
   });
-  
-  logger.info({
-    jobId: job.id,
-    candidateId: payload.candidateId,
-    jobId_num: payload.jobId,
-  }, "Job enqueued");
-  
+
+  logger.info(
+    {
+      jobId: job.id,
+      candidateId: payload.candidateId,
+      jobId_num: payload.jobId,
+    },
+    "Job enqueued"
+  );
+
   return job;
 };
 

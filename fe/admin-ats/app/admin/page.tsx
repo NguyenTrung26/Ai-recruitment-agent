@@ -2,12 +2,12 @@ import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 
 interface Candidate {
-  id: number;
+  id: string | number; // UUID or integer
   full_name: string;
   email: string;
   ai_score?: number;
   status: string;
-  job_id?: number;
+  job_id?: string | number; // UUID or integer
   [key: string]: unknown;
 }
 

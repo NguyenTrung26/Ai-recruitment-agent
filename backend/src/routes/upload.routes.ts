@@ -1,7 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
-import { supabase } from "../services/supabase.service.js";
-import { config } from "../config.js";
+import { supabase } from "../services/supabase.service.ts";
+import { config } from "../config.ts";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -36,7 +36,8 @@ router.post("/candidates/upload", upload.single("cvFile"), async (req, res) => {
       url: `${config.supabase.url}/storage/v1/object/public/${config.supabase.bucket}/${storagePath}`,
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     res.status(500).json({ error: errorMessage });
   }
 });

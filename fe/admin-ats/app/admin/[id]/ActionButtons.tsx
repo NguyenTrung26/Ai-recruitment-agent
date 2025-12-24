@@ -3,24 +3,33 @@
 import { useState } from "react";
 
 interface RequestBody {
-  candidateId: number;
+  candidateId: string | number; // UUID or integer
   interviewDate?: string;
   interviewTime?: string;
+  interviewer?: string;
+  notes?: string;
 }
 
 export default function ActionButtons({
   candidateId,
   candidateEmail,
 }: {
-  candidateId: number | string;
+  candidateId: string | number; // UUID or integer
   candidateEmail: string;
 }) {
   const [loading, setLoading] = useState(false);
   const [showSchedule, setShowSchedule] = useState(false);
   const [interviewDate, setInterviewDate] = useState("");
   const [interviewTime, setInterviewTime] = useState("10:00");
+  const [interviewer, setInterviewer] = useState("");
+  const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [debugOpen, setDebugOpen] = useState(false);
+  const [lastEndpoint, setLastEndpoint] = useState("");
+  const [lastRequestBody, setLastRequestBody] = useState("");
+  const [lastResponseStatus, setLastResponseStatus] = useState<string>("");
+  const [lastResponseBody, setLastResponseBody] = useState("");
 
   const handleDecision = async (decision: "approve" | "reject") => {
     if (decision === "approve" && !interviewDate) {
@@ -33,15 +42,22 @@ export default function ActionButtons({
     setSuccess("");
 
     try {
+      // Use the Next.js proxy route to avoid CORS and keep secrets server-side.
       const endpoint = `/api/decision/${decision}`;
       const body: RequestBody = {
-        candidateId:
-          typeof candidateId === "string" ? parseInt(candidateId) : candidateId,
+        candidateId, // UUID or integer
       };
+      console.log("Decision endpoint:", endpoint);
+      console.log("Decision body:", body);
+
+      setLastEndpoint(endpoint);
+      setLastRequestBody(JSON.stringify(body));
 
       if (decision === "approve" && interviewDate) {
         body.interviewDate = interviewDate;
         body.interviewTime = interviewTime;
+        if (interviewer) body.interviewer = interviewer;
+        if (notes) body.notes = notes;
       }
 
       const response = await fetch(endpoint, {
@@ -52,19 +68,35 @@ export default function ActionButtons({
         body: JSON.stringify(body),
       });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(
-          error.error || `Decision failed: ${response.statusText}`
-        );
+      setLastResponseStatus(`${response.status} ${response.statusText}`);
+
+      let data: any = null;
+      let rawBody = "";
+      const ct = response.headers.get("content-type") || "";
+      if (ct.includes("application/json")) {
+        try {
+          data = await response.json();
+        } catch (e) {
+          // Fall back to text if JSON parsing fails
+          rawBody = await response.text();
+        }
+      } else {
+        rawBody = await response.text();
       }
 
-      const data = await response.json();
+      setLastResponseBody(data ? JSON.stringify(data) : rawBody);
 
+      if (!response.ok) {
+        const messageBase = `Decision failed: ${response.status} ${response.statusText}`;
+        const message = data?.error || data?.message || rawBody || messageBase;
+        throw new Error(message);
+      }
+
+      const email = data?.candidate?.email || candidateEmail;
       setSuccess(
         decision === "approve"
-          ? `✓ Interview invitation sent to ${data.candidate.email}!`
-          : `✓ Rejection notification sent to ${data.candidate.email}`
+          ? `✓ Interview invitation sent to ${email}!`
+          : `✓ Rejection notification sent to ${email}`
       );
       setShowSchedule(false);
       setInterviewDate("");
@@ -74,10 +106,16 @@ export default function ActionButtons({
         window.location.href = "/admin";
       }, 3000);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to process decision"
-      );
-      console.error("Error:", err);
+      const msg =
+        err instanceof Error ? err.message : "Failed to process decision";
+      if (msg.includes("Failed to fetch")) {
+        setError(
+          "Network error: Frontend không kết nối được backend. Kiểm tra NEXT_PUBLIC_BACKEND_URL và thử http://localhost:8080/health."
+        );
+      } else {
+        setError(msg);
+      }
+      console.error("Decision error:", err);
     } finally {
       setLoading(false);
     }
@@ -143,6 +181,32 @@ export default function ActionButtons({
               />
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Interviewer (optional)
+              </label>
+              <input
+                type="text"
+                value={interviewer}
+                onChange={(e) => setInterviewer(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="e.g. John Doe"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Notes (optional)
+              </label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={3}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                placeholder="Any special instructions for the interview"
+              />
+            </div>
+
             <p className="text-sm text-gray-600 dark:text-gray-400">
               📧 Interview invitation will be sent to:{" "}
               <strong>{candidateEmail}</strong>
@@ -198,6 +262,32 @@ export default function ActionButtons({
           💡 <strong>Note:</strong> Your decision will trigger automated emails
           via the n8n workflow.
         </p>
+        <div className="mt-3">
+          <button
+            type="button"
+            onClick={() => setDebugOpen((v) => !v)}
+            className="text-xs px-2 py-1 border border-gray-300 dark:border-slate-600 rounded hover:bg-gray-100 dark:hover:bg-slate-600"
+          >
+            {debugOpen ? "Hide Debug" : "Show Debug"}
+          </button>
+        </div>
+
+        {debugOpen && (
+          <div className="mt-3 text-xs text-gray-700 dark:text-gray-200 space-y-1">
+            <div>
+              <strong>Endpoint:</strong> {lastEndpoint || "(none)"}
+            </div>
+            <div>
+              <strong>Request:</strong> {lastRequestBody || "(none)"}
+            </div>
+            <div>
+              <strong>Status:</strong> {lastResponseStatus || "(none)"}
+            </div>
+            <div className="break-words">
+              <strong>Response:</strong> {lastResponseBody || "(none)"}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

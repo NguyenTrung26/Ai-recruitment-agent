@@ -1,7 +1,8 @@
 import { Router, type Request, type Response } from "express";
-import { supabase } from "../services/supabase.service.js";
-import { logger } from "../services/logger.service.js";
-import { sendEmail } from "../services/notification.service.js";
+import { supabase } from "../services/supabase.service.ts";
+import { logger } from "../services/logger.service.ts";
+import { sendEmail } from "../services/notification.service.ts";
+import { triggerN8nWorkflow } from "../services/n8n.service.ts";
 
 const router = Router();
 
@@ -11,15 +12,21 @@ const router = Router();
  */
 router.post("/approve", async (req: Request, res: Response) => {
   try {
-    const { candidateId, interviewDate, interviewTime } = req.body;
-
-    const numericCandidateId = Number(candidateId);
-    if (!Number.isFinite(numericCandidateId)) {
-      return res.status(400).json({
-        error: "candidateId must be a valid number",
-        details: { candidateId },
-      });
-    }
+    console.log("Approve request body:", req.body);
+    const { candidateId, interviewDate, interviewTime, interviewer, notes } =
+      req.body as {
+        candidateId?: string | number;
+        interviewDate?: string;
+        interviewTime?: string;
+        interviewer?: string;
+        notes?: string;
+      };
+    console.log(
+      "Extracted candidateId:",
+      candidateId,
+      "Type:",
+      typeof candidateId
+    );
 
     if (!candidateId) {
       return res.status(400).json({ error: "candidateId is required" });
@@ -29,31 +36,28 @@ router.post("/approve", async (req: Request, res: Response) => {
     const { data: candidate, error: fetchError } = await supabase
       .from("candidates")
       .select("id, full_name, email")
-      .eq("id", numericCandidateId)
+      .eq("id", candidateId)
       .single();
 
     if (fetchError || !candidate) {
       return res.status(404).json({ error: "Candidate not found" });
     }
 
-    // If interview details are provided, create an entry in interview_schedules
-    if (interviewDate) {
-      const interviewISO = new Date(
-        `${interviewDate}T${interviewTime || "10:00"}:00Z`
-      ).toISOString();
-      const { error: scheduleError } = await supabase
-        .from("interview_schedules")
-        .insert({
-          candidate_id: numericCandidateId,
-          job_id: null,
-          interview_date: interviewISO,
-          interview_type: "technical",
-          status: "scheduled",
-        });
+    // Insert into interviews table (new schema) when approving
+    const scheduledTime = interviewDate
+      ? new Date(
+          `${interviewDate}T${interviewTime || "10:00"}:00Z`
+        ).toISOString()
+      : null;
+    const { error: interviewError } = await supabase.from("interviews").insert({
+      candidate_id: candidate.id,
+      scheduled_time: scheduledTime,
+      interviewer: interviewer || null,
+      notes: notes || null,
+    });
 
-      if (scheduleError) {
-        logger.warn({ scheduleError }, "Failed to create interview schedule");
-      }
+    if (interviewError) {
+      logger.warn({ interviewError }, "Failed to create interview record");
     }
 
     // Update candidate status (align with defined enum values)
@@ -65,7 +69,7 @@ router.post("/approve", async (req: Request, res: Response) => {
       .update({
         status: newStatus,
       })
-      .eq("id", numericCandidateId);
+      .eq("id", candidateId);
 
     // If status violates a DB CHECK constraint, retry with a safer status
     if (updateError && (updateError as any)?.code === "23514") {
@@ -78,7 +82,7 @@ router.post("/approve", async (req: Request, res: Response) => {
         .update({
           status: "screening-passed",
         })
-        .eq("id", numericCandidateId);
+        .eq("id", candidateId);
       updateError = retry.error;
     }
 
@@ -106,8 +110,8 @@ router.post("/approve", async (req: Request, res: Response) => {
         ${
           interviewDate
             ? `
-          <div style="background-color: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #0369a1; margin-top: 0;">📅 Interview Details</h3>
+          <div style=\"background-color: #f0f9ff; padding: 15px; border-radius: 8px; margin: 20px 0;\">
+            <h3 style=\"color: #0369a1; margin-top: 0;\">📅 Interview Details</h3>
             <p><strong>Date:</strong> ${interviewDate}</p>
             <p><strong>Time:</strong> ${interviewTime || "To be confirmed"}</p>
           </div>
@@ -126,6 +130,17 @@ router.post("/approve", async (req: Request, res: Response) => {
       to: candidate.email,
       subject: "Interview Invitation - AI Recruitment",
       html: emailHtml,
+    });
+
+    // Trigger n8n workflow for further automations (e.g., calendar invite)
+    await triggerN8nWorkflow({
+      decision: "approve",
+      candidate_id: candidate.id,
+      full_name: candidate.full_name,
+      email: candidate.email,
+      interviewer: interviewer || null,
+      notes: notes || null,
+      scheduled_time: scheduledTime,
     });
 
     logger.info({ candidateId, email: candidate.email }, "Approval email sent");
@@ -155,15 +170,7 @@ router.post("/approve", async (req: Request, res: Response) => {
  */
 router.post("/reject", async (req: Request, res: Response) => {
   try {
-    const { candidateId } = req.body;
-
-    const numericCandidateId = Number(candidateId);
-    if (!Number.isFinite(numericCandidateId)) {
-      return res.status(400).json({
-        error: "candidateId must be a valid number",
-        details: { candidateId },
-      });
-    }
+    const { candidateId } = req.body as { candidateId?: string | number };
 
     if (!candidateId) {
       return res.status(400).json({ error: "candidateId is required" });
@@ -173,7 +180,7 @@ router.post("/reject", async (req: Request, res: Response) => {
     const { data: candidate, error: fetchError } = await supabase
       .from("candidates")
       .select("id, full_name, email")
-      .eq("id", numericCandidateId)
+      .eq("id", candidateId)
       .single();
 
     if (fetchError || !candidate) {
@@ -186,7 +193,7 @@ router.post("/reject", async (req: Request, res: Response) => {
       .update({
         status: "rejected",
       })
-      .eq("id", numericCandidateId);
+      .eq("id", candidateId);
 
     if (updateError) {
       logger.error({ updateError }, "Failed to update candidate status");
@@ -219,6 +226,13 @@ router.post("/reject", async (req: Request, res: Response) => {
       to: candidate.email,
       subject: "Application Status - AI Recruitment",
       html: emailHtml,
+    });
+
+    await triggerN8nWorkflow({
+      decision: "reject",
+      candidate_id: candidate.id,
+      full_name: candidate.full_name,
+      email: candidate.email,
     });
 
     logger.info(

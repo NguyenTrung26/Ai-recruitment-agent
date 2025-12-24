@@ -10,9 +10,10 @@ export default async function CandidateDetail({ params }: PageParams) {
   try {
     // Fix: Next.js 15+ requires awaiting params
     const { id } = await params;
-    const candidateId = parseInt(id as string, 10);
+    // Support both integer and UUID
+    const candidateId = isNaN(Number(id)) ? id : Number(id);
 
-    if (isNaN(candidateId)) {
+    if (!candidateId) {
       throw new Error("Invalid candidate ID");
     }
 

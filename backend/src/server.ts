@@ -5,6 +5,7 @@ import jobRoutes from "./routes/job.routes.ts";
 import statisticsRoutes from "./routes/statistics.routes.ts";
 import aiRoutes from "./routes/ai.routes.ts";
 import decisionRoutes from "./routes/decision.routes.ts";
+import scheduleRoutes from "./routes/schedule.routes.ts";
 import cvRoutes from "./routes/cv.routes.ts";
 import {
   errorHandler,
@@ -88,6 +89,7 @@ app.use("/api", jobRoutes);
 app.use("/api", statisticsRoutes);
 app.use("/api", aiRoutes);
 app.use("/api/decision", decisionRoutes);
+app.use("/api/schedules", scheduleRoutes);
 app.use("/api/cv", cvRoutes);
 
 // Error handler (must be last)

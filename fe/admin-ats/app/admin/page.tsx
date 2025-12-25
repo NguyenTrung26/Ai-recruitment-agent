@@ -20,6 +20,22 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-slate-900 py-12">
       <div className="max-w-6xl mx-auto px-4">
+        {/* Navigation Tabs */}
+        <div className="mb-8 flex gap-4 border-b border-gray-300 dark:border-gray-700">
+          <Link
+            href="/admin"
+            className="px-4 py-3 font-semibold text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
+          >
+            👥 Candidates
+          </Link>
+          <Link
+            href="/admin/schedules"
+            className="px-4 py-3 font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition"
+          >
+            📅 Scheduled Posts
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">

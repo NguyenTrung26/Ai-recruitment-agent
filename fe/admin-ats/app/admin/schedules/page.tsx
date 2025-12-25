@@ -53,8 +53,35 @@ export default function SchedulesPage() {
       done: { bg: "bg-green-100", text: "text-green-800" },
       cancel: { bg: "bg-red-100", text: "text-red-800" },
     };
-    const style = statusMap[status] || { bg: "bg-gray-100", text: "text-gray-800" };
-    return <span className={`px-2 py-1 rounded text-sm font-medium ${style.bg} ${style.text}`}>{status}</span>;
+    const style = statusMap[status] || {
+      bg: "bg-gray-100",
+      text: "text-gray-800",
+    };
+    return (
+      <span
+        className={`px-2 py-1 rounded text-sm font-medium ${style.bg} ${style.text}`}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  const formatDateTime = (dateString: string | null | undefined) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "Invalid Date";
+      return date.toLocaleString("vi-VN", {
+        timeZone: "Asia/Ho_Chi_Minh",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return "Invalid Date";
+    }
   };
 
   return (
@@ -101,7 +128,9 @@ export default function SchedulesPage() {
 
         {loading && (
           <div className="text-center py-8">
-            <p className="text-gray-600 dark:text-gray-400">⏳ Đang tải dữ liệu...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              ⏳ Đang tải dữ liệu...
+            </p>
           </div>
         )}
 
@@ -109,7 +138,10 @@ export default function SchedulesPage() {
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow p-12 text-center">
             <p className="text-gray-600 dark:text-gray-400 text-lg">
               Không có lịch nào.{" "}
-              <Link href="/admin/schedules/new" className="text-blue-600 hover:underline">
+              <Link
+                href="/admin/schedules/new"
+                className="text-blue-600 hover:underline"
+              >
                 Thêm lịch mới
               </Link>
             </p>
@@ -122,27 +154,52 @@ export default function SchedulesPage() {
               <table className="w-full">
                 <thead>
                   <tr className="bg-blue-600 dark:bg-blue-800">
-                    <th className="px-6 py-3 text-left text-white font-semibold">ID</th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">Tiêu đề</th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">Nội dung</th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">Thời gian đăng</th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">Trạng thái</th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">Ngày tạo</th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">Hành động</th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      Tiêu đề
+                    </th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      Nội dung
+                    </th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      Thời gian đăng
+                    </th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      Trạng thái
+                    </th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      Ngày tạo
+                    </th>
+                    <th className="px-6 py-3 text-left text-white font-semibold">
+                      Hành động
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {schedules.map((item) => (
-                    <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-slate-700 transition">
-                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100">{item.id}</td>
-                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100 font-semibold">{item.title}</td>
-                      <td className="px-6 py-3 text-gray-600 dark:text-gray-400 truncate max-w-xs">{item.content}</td>
-                      <td className="px-6 py-3 text-gray-600 dark:text-gray-400">
-                        {new Date(item.scheduled_time).toLocaleString("vi-VN")}
+                    <tr
+                      key={item.id}
+                      className="hover:bg-gray-50 dark:hover:bg-slate-700 transition"
+                    >
+                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100">
+                        {item.id}
                       </td>
-                      <td className="px-6 py-3">{getStatusBadge(item.status)}</td>
+                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100 font-semibold">
+                        {item.title}
+                      </td>
+                      <td className="px-6 py-3 text-gray-600 dark:text-gray-400 truncate max-w-xs">
+                        {item.content}
+                      </td>
                       <td className="px-6 py-3 text-gray-600 dark:text-gray-400">
-                        {new Date(item.created_at).toLocaleString("vi-VN")}
+                        {formatDateTime(item.scheduled_time)}
+                      </td>
+                      <td className="px-6 py-3">
+                        {getStatusBadge(item.status)}
+                      </td>
+                      <td className="px-6 py-3 text-gray-600 dark:text-gray-400">
+                        {formatDateTime(item.created_at)}
                       </td>
                       <td className="px-6 py-3">
                         <a

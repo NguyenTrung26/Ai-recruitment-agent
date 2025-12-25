@@ -12,10 +12,15 @@ export default function AddSchedulePage() {
     apply_link: "",
     scheduled_time: "",
   });
-  const [message, setMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [message, setMessage] = useState<{
+    text: string;
+    type: "success" | "error";
+  } | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
@@ -26,9 +31,30 @@ export default function AddSchedulePage() {
     setLoading(true);
 
     try {
+      // Parse datetime-local and force it to be interpreted as Vietnam time (UTC+7)
+      const [datePart, timePart] = formData.scheduled_time.split("T");
+      const [year, month, day] = datePart.split("-").map(Number);
+      const [hour, minute] = timePart.split(":").map(Number);
+
+      // Create Date object as if it's in user's local timezone
+      const localDate = new Date(year, month - 1, day, hour, minute);
+
+      // Get browser's timezone offset in minutes
+      const browserOffset = localDate.getTimezoneOffset();
+      const vietnamOffset = -420; // UTC+7 = -420 minutes from UTC
+
+      // Calculate correction to convert to Vietnam time (UTC+7)
+      const correction = (vietnamOffset - browserOffset) * 60 * 1000;
+
+      // Create UTC date with correction
+      const utcDate = new Date(localDate.getTime() + correction);
+      const isoString = utcDate.toISOString();
+
       const payload = {
-        ...formData,
-        scheduled_time: formData.scheduled_time.replace("T", " "),
+        job_title: formData.job_title,
+        job_desc: formData.job_desc,
+        apply_link: formData.apply_link,
+        scheduled_time: isoString,
       };
 
       const response = await fetch(`/api/schedules`, {
@@ -39,7 +65,12 @@ export default function AddSchedulePage() {
 
       if (response.ok) {
         setMessage({ text: "✅ Đã thêm lịch thành công!", type: "success" });
-        setFormData({ job_title: "", job_desc: "", apply_link: "", scheduled_time: "" });
+        setFormData({
+          job_title: "",
+          job_desc: "",
+          apply_link: "",
+          scheduled_time: "",
+        });
         setTimeout(() => router.push("/admin/schedules"), 2000);
       } else {
         const errorData = await response.json();
@@ -73,7 +104,10 @@ export default function AddSchedulePage() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="job_title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="job_title"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Tiêu đề công việc
               </label>
               <input
@@ -88,7 +122,10 @@ export default function AddSchedulePage() {
             </div>
 
             <div>
-              <label htmlFor="job_desc" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="job_desc"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Mô tả công việc
               </label>
               <textarea
@@ -103,7 +140,10 @@ export default function AddSchedulePage() {
             </div>
 
             <div>
-              <label htmlFor="apply_link" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="apply_link"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Link ứng tuyển
               </label>
               <input
@@ -118,7 +158,10 @@ export default function AddSchedulePage() {
             </div>
 
             <div>
-              <label htmlFor="scheduled_time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label
+                htmlFor="scheduled_time"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
                 Thời gian đăng
               </label>
               <input

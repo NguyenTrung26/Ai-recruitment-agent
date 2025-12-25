@@ -16,16 +16,19 @@ router.post("/", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const { data, error } = await supabase.from("scheduled_jobs").insert([
-      {
-        job_title,
-        job_desc,
-        apply_link,
-        scheduled_time,
-        status: "todo",
-        posted_time: new Date().toISOString(),
-      },
-    ]).select();
+    const { data, error } = await supabase
+      .from("scheduled_jobs")
+      .insert([
+        {
+          job_title,
+          job_desc,
+          apply_link,
+          scheduled_time,
+          status: "todo",
+          posted_time: new Date().toISOString(),
+        },
+      ])
+      .select();
 
     if (error) {
       logger.error({ error }, "Failed to insert schedule");
@@ -39,7 +42,8 @@ router.post("/", async (req: Request, res: Response) => {
       data,
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     logger.error({ error: errorMessage }, "Schedule POST error");
     return res.status(500).json({
       error: "Internal server error",
@@ -56,7 +60,9 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabase
       .from("scheduled_jobs")
-      .select("id, job_title, job_desc, scheduled_time, status, apply_link, posted_time")
+      .select(
+        "id, job_title, job_desc, scheduled_time, status, apply_link, posted_time"
+      )
       .order("posted_time", { ascending: false });
 
     if (error) {
@@ -77,7 +83,8 @@ router.get("/", async (req: Request, res: Response) => {
     logger.info({ count: mapped.length }, "Schedules fetched");
     return res.json(mapped);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     logger.error({ error: errorMessage }, "Schedule GET error");
     return res.status(500).json({
       error: "Internal server error",
@@ -117,7 +124,8 @@ router.put("/:id", async (req: Request, res: Response) => {
       data,
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     logger.error({ error: errorMessage }, "Schedule PUT error");
     return res.status(500).json({
       error: "Internal server error",
@@ -134,7 +142,10 @@ router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const { error } = await supabase.from("scheduled_jobs").delete().eq("id", id);
+    const { error } = await supabase
+      .from("scheduled_jobs")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       logger.error({ error, id }, "Failed to delete schedule");
@@ -147,7 +158,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
       message: "Schedule deleted successfully",
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
     logger.error({ error: errorMessage }, "Schedule DELETE error");
     return res.status(500).json({
       error: "Internal server error",

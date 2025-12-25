@@ -4,9 +4,10 @@ export const runtime = "nodejs";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { action: string } }
+  { params }: { params: Promise<{ action: string }> }
 ) {
-  const { action } = params;
+  // Await params để lấy giá trị
+  const { action } = await params;
 
   if (!["approve", "reject"].includes(action)) {
     return new Response(JSON.stringify({ error: "Not found" }), {
@@ -24,7 +25,6 @@ export async function POST(
 
   const backendUrl =
     process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8080";
-
   const endpoint = `${backendUrl}/api/decision/${action}`;
 
   let upstreamResp: Response;
@@ -37,7 +37,6 @@ export async function POST(
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to reach backend";
-
     return new Response(JSON.stringify({ error: message }), {
       status: 502,
       headers: { "content-type": "application/json" },

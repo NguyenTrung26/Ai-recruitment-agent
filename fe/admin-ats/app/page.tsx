@@ -36,8 +36,8 @@ export default function Home() {
     try {
       setLoading(true);
       const [candidatesRes, jobsRes] = await Promise.all([
-        supabase.from("candidates").select("*").limit(5),
-        supabase.from("jobs").select("*").limit(5),
+        supabase.from("candidates").select("*").limit(1000),
+        supabase.from("jobs").select("*").limit(100),
       ]);
 
       if (candidatesRes.data) setCandidates(candidatesRes.data);

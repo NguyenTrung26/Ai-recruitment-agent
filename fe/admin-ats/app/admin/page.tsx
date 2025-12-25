@@ -15,7 +15,8 @@ export default async function AdminPage() {
   const { data: candidates, error } = await supabase
     .from("candidates")
     .select("*")
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .limit(1000); // Get up to 1000 candidates
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-slate-900 py-12">

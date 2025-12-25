@@ -4,9 +4,9 @@ export const runtime = "nodejs";
 
 export async function POST(
   request: NextRequest,
-  context: { params: Promise<{ action: string }> }
+  { params }: { params: { action: string } }
 ) {
-  const { action } = await context.params;
+  const { action } = params;
 
   if (!["approve", "reject"].includes(action)) {
     return new Response(JSON.stringify({ error: "Not found" }), {
@@ -15,7 +15,7 @@ export async function POST(
     });
   }
 
-  let payload: unknown = null;
+  let payload: unknown;
   try {
     payload = await request.json();
   } catch {

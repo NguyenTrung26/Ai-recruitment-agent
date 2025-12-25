@@ -54,7 +54,10 @@ const cleanJson = (text: string) => {
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const callGemini = async (prompt: string, retries = MAX_RETRIES): Promise<any> => {
+const callGemini = async (
+  prompt: string,
+  retries = MAX_RETRIES
+): Promise<any> => {
   try {
     const payload = { contents: [{ parts: [{ text: prompt }] }] };
     const response = await axios.post(GEMINI_API_URL, payload);
@@ -71,7 +74,11 @@ const callGemini = async (prompt: string, retries = MAX_RETRIES): Promise<any> =
   }
 };
 
-export const buildPrompt = (cvText: string, job: JobContext, weights?: ScoringWeights): string => {
+export const buildPrompt = (
+  cvText: string,
+  job: JobContext,
+  weights?: ScoringWeights
+): string => {
   const w = weights || DEFAULT_WEIGHTS;
   const jd = `Title: ${job.title || "Unknown"}
 Location: ${job.location || "-"}
@@ -142,7 +149,10 @@ export const decideStatusFromScores = (
   const r = rules || DEFAULT_RULES;
   const { score_overall, score_tech, missing_skills } = analysis;
 
-  if (score_overall >= r.min_overall_score_pass && score_tech >= r.min_tech_score_pass) {
+  if (
+    score_overall >= r.min_overall_score_pass &&
+    score_tech >= r.min_tech_score_pass
+  ) {
     return "screening-passed";
   }
 
@@ -165,8 +175,12 @@ export const generateFeedbackMessage = (analysis: CvAnalysis): string => {
   feedback += `Điểm mạnh:\n${strengths.map((s) => `- ${s}`).join("\n")}\n\n`;
 
   if (missing_skills && missing_skills.length > 0) {
-    feedback += `Kỹ năng cần cải thiện:\n${missing_skills.map((s) => `- ${s}`).join("\n")}\n\n`;
-    feedback += `Gợi ý: Bạn có thể tham gia các khóa học về ${missing_skills.slice(0, 2).join(", ")} để nâng cao cơ hội.\n\n`;
+    feedback += `Kỹ năng cần cải thiện:\n${missing_skills
+      .map((s) => `- ${s}`)
+      .join("\n")}\n\n`;
+    feedback += `Gợi ý: Bạn có thể tham gia các khóa học về ${missing_skills
+      .slice(0, 2)
+      .join(", ")} để nâng cao cơ hội.\n\n`;
   }
 
   feedback += `Nhận xét: ${summary}`;
@@ -183,7 +197,10 @@ export const analyzeCvWithGemini = async (
   try {
     return callGemini(prompt);
   } catch (error) {
-    logger.error({ error: (error as any)?.message }, "Error analyzing CV with Gemini");
+    logger.error(
+      { error: (error as any)?.message },
+      "Error analyzing CV with Gemini"
+    );
     return null;
   }
 };
@@ -229,7 +246,9 @@ export const reAnalyzeCandidate = async (
   if (jobId) {
     const { data: job } = await supabase
       .from("jobs")
-      .select("description, requirements, title, skills_required, experience_level")
+      .select(
+        "description, requirements, title, skills_required, experience_level"
+      )
       .eq("id", jobId)
       .single();
 

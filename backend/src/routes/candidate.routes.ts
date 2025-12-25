@@ -14,18 +14,10 @@ const router = Router();
 router.post("/candidates/intake", apiKeyAuth, intakeCandidate);
 
 // Step 2: Confirm upload & enqueue analysis
-router.post(
-  "/candidates/:id/ingest",
-  apiKeyAuth,
-  enqueueAnalysisAfterUpload
-);
+router.post("/candidates/:id/ingest", apiKeyAuth, enqueueAnalysisAfterUpload);
 
 // Alias route for n8n workflow compatibility
-router.post(
-  "/candidates/:id/enqueue",
-  apiKeyAuth,
-  enqueueAnalysisAfterUpload
-);
+router.post("/candidates/:id/enqueue", apiKeyAuth, enqueueAnalysisAfterUpload);
 
 // Get all candidates
 router.get("/candidates", getCandidates);

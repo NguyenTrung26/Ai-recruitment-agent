@@ -431,7 +431,6 @@
     </div>
   </section>
 
-  <!-- Recruitment Form Section -->
   <section class="section recruitment" id="apply">
     <div class="container">
       <div class="section-title">
@@ -443,12 +442,12 @@
         <form id="recruitmentForm">
           <div class="form-group">
             <label for="fullName">Họ và Tên <span>*</span></label>
-            <input type="text" id="fullName" class="form-input" placeholder="Nguyễn Văn A" required>
+            <input type="text" id="fullName" name="name" class="form-input" placeholder="Nguyễn Văn A" required>
           </div>
 
           <div class="form-group">
             <label for="email">Email <span>*</span></label>
-            <input type="email" id="email" class="form-input" placeholder="email@example.com" required>
+            <input type="email" id="email" name="email" class="form-input" placeholder="email@example.com" required>
           </div>
 
           <div class="form-group">
@@ -458,7 +457,7 @@
 
           <div class="form-group">
             <label for="position">Vị Trí Ứng Tuyển <span>*</span></label>
-            <select id="position" class="form-select" required>
+            <select id="position" name="role" class="form-select" required>
               <option value="">-- Chọn vị trí --</option>
               <option value="Senior Full Stack Developer">Senior Full Stack Developer</option>
               <option value="UI/UX Designer">UI/UX Designer</option>
@@ -483,7 +482,7 @@
 
           <div class="form-group">
             <label for="coverLetter">Thư Giới Thiệu</label>
-            <textarea id="coverLetter" class="form-textarea"
+            <textarea id="coverLetter" name="cv_text" class="form-textarea"
               placeholder="Giới thiệu ngắn gọn về bản thân và lý do bạn muốn làm việc tại TechVision..."></textarea>
           </div>
 
@@ -507,6 +506,105 @@
       </div>
     </div>
   </section>
+
+  <script>
+    // n8n webhook URL - change this to match your n8n instance
+    const N8N_WEBHOOK_URL = 'http://localhost:5678/webhook-test/apply-cv';
+
+    // Show selected file name
+    const cvInput = document.getElementById('cv');
+    const fileNameEl = document.getElementById('fileName');
+    if (cvInput && fileNameEl) {
+      cvInput.addEventListener('change', () => {
+        const f = cvInput.files?.[0];
+        if (f) {
+          fileNameEl.style.display = 'block';
+          fileNameEl.textContent = `📄 ${f.name} (${Math.round(f.size / 1024)} KB)`;
+        } else {
+          fileNameEl.style.display = 'none';
+          fileNameEl.textContent = '';
+        }
+      });
+    }
+
+    // Submit form with FormData (including file)
+    const form = document.getElementById('recruitmentForm');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // Get form values
+      const fullName = document.getElementById('fullName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const position = document.getElementById('position').value;
+      const experience = document.getElementById('experience').value;
+      const coverLetter = document.getElementById('coverLetter').value.trim();
+      const cvFile = document.getElementById('cv').files[0];
+
+      // Validation
+      if (!fullName || !email || !phone || !position || !experience) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc (*)');
+        return;
+      }
+
+      if (!cvFile) {
+        alert('Vui lòng tải lên file CV của bạn');
+        return;
+      }
+
+      // Create FormData
+      const formData = new FormData();
+      formData.append('fullName', fullName);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('jobId', position);
+      formData.append('experience', experience);
+      formData.append('coverLetter', coverLetter);
+      formData.append('cv', cvFile);
+
+      // Update button state
+      const submitBtn = form.querySelector('.form-submit');
+      const originalHTML = submitBtn?.innerHTML;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+      }
+
+      try {
+        const res = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          body: formData,
+        });
+
+        const text = await res.text();
+
+        if (!res.ok) {
+          throw new Error(`Webhook error: ${res.status} - ${text}`);
+        }
+
+        // Success
+        alert('✅ Gửi hồ sơ thành công! Chúng tôi sẽ liên hệ với bạn sớm.');
+        form.reset();
+        if (fileNameEl) {
+          fileNameEl.style.display = 'none';
+          fileNameEl.textContent = '';
+        }
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (err) {
+        console.error('Error submitting form:', err);
+        alert('❌ Có lỗi khi gửi hồ sơ: ' + err.message + '\n\nVui lòng thử lại sau hoặc liên hệ HR: contact@techvision.vn');
+      } finally {
+        // Restore button
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = originalHTML;
+        }
+      }
+    });
+  </script>
 
   <!-- Footer -->
   <footer class="footer">

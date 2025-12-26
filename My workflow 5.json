@@ -1,0 +1,1105 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "candidates",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Edit Fields').item.json.candidate_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "ai_score",
+              "fieldValue": "={{ $json.score }}"
+            },
+            {
+              "fieldId": "ai_analysis",
+              "fieldValue": "={{ $json.summary }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.status }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2496,
+        576
+      ],
+      "id": "4bf460ef-0542-4e2c-8b0f-81dcdccc78e5",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "wvkX4fwrDnsrRx3M",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return JSON.parse($json.content.parts[0].text);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2944,
+        576
+      ],
+      "id": "f7c128f7-0ca1-48a3-adce-fa7fd1219c68",
+      "name": "Function Item(JSON string -> object)"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Bạn là chuyên gia tuyển dụng nhân sự (HR).\n\nHãy phân tích nội dung CV dưới đây và so sánh với yêu cầu công việc.\n\n**Yêu cầu công việc:**\n- Vị trí: Backend Developer\n- Kinh nghiệm: 2 năm với Node.js\n- Kỹ năng: REST API, PostgreSQL, Docker\n\n**Nội dung CV của ứng viên:**\n{{ $json.text }}\n\n**Nhiệm vụ của bạn:**\n1. Chấm điểm mức độ phù hợp của ứng viên trên thang điểm 100.\n2. Tóm tắt ngắn gọn điểm mạnh và điểm yếu của ứng viên.\n3. Liệt kê các kỹ năng liên quan tìm thấy trong CV.\n\n**QUAN TRỌNG — BẮT BUỘC:**\n- Chỉ trả về 1 OBJECT JSON DUY NHẤT.\n- KHÔNG được thêm ``` hoặc markdown.\n- KHÔNG được thêm bất kỳ văn bản nào ngoài JSON.\n- Không được bao trong mảng.\n- Không được bao trong chuỗi text.\n- Không được trả thêm giải thích.\n\nTrả về đúng theo cấu trúc:\n\n{\n  \"score\": <number>,\n  \"summary\": \"<text>\",\n  \"skills\": [\"skill1\", \"skill2\"]\n}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -3296,
+        608
+      ],
+      "id": "ebb2fd3c-c779-4a4d-b81e-22bfdb96ff16",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Dhx7KffvzTp0urud",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "apply-cv",
+        "options": {
+          "binaryPropertyName": "cvFile"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -3792,
+        272
+      ],
+      "id": "1071549f-9847-458e-8ace-0f8ce02a47ce",
+      "name": "Webhook",
+      "webhookId": "d6d577c9-d83a-4183-98ab-dd54f2fa2e68"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -3392,
+        208
+      ],
+      "id": "949d809d-3289-4657-905f-40b2feaf7104",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $json.body;\n\nreturn [\n  {\n    full_name: body.fullName ?? null,\n    email: body.email ?? null,\n    phone_number: body.phone ?? null,\n    cv_url: $json.Key ?? null,\n    job_title: body.jobId ?? null,\n    experience: body.experience ?? null,\n    cover_letter: body.coverLetter ?? null,\n    status: 'pending_ai'\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3152,
+        272
+      ],
+      "id": "578f8655-0172-4357-8c68-ebe7122cc5ee",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "jobs",
+        "limit": 1,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "title",
+              "condition": "eq",
+              "keyValue": "={{ $json.job_title }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2896,
+        272
+      ],
+      "id": "c74e2c21-2f17-49f8-9a12-fddb4905bc23",
+      "name": "Get Job",
+      "credentials": {
+        "supabaseApi": {
+          "id": "wvkX4fwrDnsrRx3M",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "candidates",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "full_name",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.full_name }}"
+            },
+            {
+              "fieldId": "email",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.email }}"
+            },
+            {
+              "fieldId": "phone_number",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.phone_number }}"
+            },
+            {
+              "fieldId": "cv_url",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.cv_url }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $('Code in JavaScript').item.json.status }}"
+            },
+            {
+              "fieldId": "job_id",
+              "fieldValue": "={{ $json.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2672,
+        272
+      ],
+      "id": "630bd00d-9fd8-45e6-9e6f-583bf312aaa4",
+      "name": "Create Candidate",
+      "credentials": {
+        "supabaseApi": {
+          "id": "wvkX4fwrDnsrRx3M",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "apply-cv-api",
+        "height": 336,
+        "width": 1632,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3888,
+        160
+      ],
+      "typeVersion": 1,
+      "id": "9a7faea9-b027-42ce-9f22-afaa0a83a8a3",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "89412740-edd0-419e-a726-0b043f80d62a",
+              "name": "candidate_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c16ec2e6-d887-4758-b38a-a2777283c907",
+              "name": "cv_url",
+              "value": "={{ $json.cv_url }}",
+              "type": "string"
+            },
+            {
+              "id": "577e509f-4174-4ff0-bc69-f37d1b1d9a04",
+              "name": "job_id",
+              "value": "={{ $json.job_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2448,
+        272
+      ],
+      "id": "e5187dd4-840b-4f19-9667-e206d0234325",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "sAI Analyze",
+        "height": 272,
+        "width": 1648,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3888,
+        560
+      ],
+      "typeVersion": 1,
+      "id": "75d9c2f7-99e9-4874-8e8b-c596a1909147",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $items().map(item => {\n  return {\n    json: {\n      ...item.json,\n      status: 'ai_scored'\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2704,
+        672
+      ],
+      "id": "278b4b85-1eaa-43a0-8e96-711bf1bf0f91",
+      "name": "Set AI Scored Status"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "/admin/decision",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1968,
+        448
+      ],
+      "id": "83de93ed-cd36-4be2-a4ca-7370165927e1",
+      "name": "Webhook1",
+      "webhookId": "85821e99-8084-4cf7-ac3d-6b3fd527ee57"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://vsgefoyrjaggrqlfgnwe.supabase.co/storage/v1/object/cvs/{{ $binary.cvFile0.fileName }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzZ2Vmb3lyamFnZ3JxbGZnbndlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjQ4ODY2MCwiZXhwIjoyMDgyMDY0NjYwfQ.nHodx5_345SbEx5qE4vGmcP236f1pCOFNy6vfFzoPAI"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZzZ2Vmb3lyamFnZ3JxbGZnbndlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjQ4ODY2MCwiZXhwIjoyMDgyMDY0NjYwfQ.nHodx5_345SbEx5qE4vGmcP236f1pCOFNy6vfFzoPAI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "={{ $binary.cvFile0.mimeType }}"
+            },
+            {
+              "name": "x-upsert",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "cvFile0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3568,
+        320
+      ],
+      "id": "38306302-d36f-4c82-8c1e-8a0c6ceffe28",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "=https://vsgefoyrjaggrqlfgnwe.supabase.co/storage/v1/object/public/{{ $json.cv_url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "binary.data"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3744,
+        624
+      ],
+      "id": "138835f6-4817-4144-b055-8e337a0ec7e1",
+      "name": "Get CV"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "binary.data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -3520,
+        608
+      ],
+      "id": "5839d7f2-0788-4d69-92ea-adddbc84b5e5",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "content": "Auto send a mail",
+        "height": 480,
+        "width": 1312,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2032,
+        336
+      ],
+      "typeVersion": 1,
+      "id": "0862ab9b-a897-4b22-a763-0cfd81742ba7",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "7805e2c9-5118-4e33-8424-dc6a5c65084a",
+              "leftValue": "={{$json.body.decision}}",
+              "rightValue": "approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1696,
+        448
+      ],
+      "id": "b7eea084-8506-4d84-af8a-f0e0efecbfed",
+      "name": "Quyết định HR"
+    },
+    {
+      "parameters": {
+        "operation": "addToDate",
+        "magnitude": "={{ $json.scheduled_time }}",
+        "timeUnit": "minutes",
+        "duration": "=60",
+        "outputFieldName": "end_time",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        -1088,
+        464
+      ],
+      "id": "db2f4b4b-452b-4751-a8d4-edc8a9f6447b",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "trungtrung261004@gmail.com",
+          "mode": "list",
+          "cachedResultName": "trungtrung261004@gmail.com"
+        },
+        "additionalFields": {
+          "attendees": [
+            "={{ $('Webhook1').item.json.body.email }}"
+          ],
+          "description": "=Ứng viên:  {{ $('Webhook1').item.json.body.full_name }}\nPhỏng vấn bởi: HR .....\nGhi chú: {{ $('Webhook1').item.json.body.notes }}",
+          "summary": "=Phỏng vấn - {{ $('Webhook1').item.json.body.full_name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -864,
+        448
+      ],
+      "id": "c4b67923-f2d0-43fd-9700-59ad6ff6077e",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "NDUBhWo7zxmJUiOe",
+          "name": "Google Calendar account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook1').item.json.body.email }}",
+        "subject": "=Kết quả ứng tuyển ",
+        "message": "=<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>🎉 Chúc Mừng! Bạn Đã Trúng Tuyển!</title>\n    <style>\n        @keyframes confetti {\n            0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }\n            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }\n        }\n        @keyframes fadeInUp {\n            from { opacity: 0; transform: translateY(30px); }\n            to { opacity: 1; transform: translateY(0); }\n        }\n        @keyframes pulse {\n            0%, 100% { transform: scale(1); }\n            50% { transform: scale(1.05); }\n        }\n        @keyframes shine {\n            0% { background-position: -200% center; }\n            100% { background-position: 200% center; }\n        }\n        .confetti {\n            position: absolute;\n            width: 10px;\n            height: 10px;\n            animation: confetti 3s ease-in-out infinite;\n        }\n        .animate-in {\n            animation: fadeInUp 0.8s ease-out;\n        }\n        .pulse {\n            animation: pulse 2s ease-in-out infinite;\n        }\n    </style>\n</head>\n<body style=\"margin:0;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;\">\n    \n    <div style=\"max-width:650px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,0.4);position:relative;\">\n        \n        <!-- Confetti Animation -->\n        <div style=\"position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;pointer-events:none;z-index:10;\">\n            <div class=\"confetti\" style=\"left:10%;background:#ffd700;animation-delay:0s;\"></div>\n            <div class=\"confetti\" style=\"left:20%;background:#ff6b6b;animation-delay:0.2s;\"></div>\n            <div class=\"confetti\" style=\"left:30%;background:#4ecdc4;animation-delay:0.4s;\"></div>\n            <div class=\"confetti\" style=\"left:40%;background:#45b7d1;animation-delay:0.6s;\"></div>\n            <div class=\"confetti\" style=\"left:50%;background:#ffd700;animation-delay:0.8s;\"></div>\n            <div class=\"confetti\" style=\"left:60%;background:#ff6b6b;animation-delay:1s;\"></div>\n            <div class=\"confetti\" style=\"left:70%;background:#4ecdc4;animation-delay:1.2s;\"></div>\n            <div class=\"confetti\" style=\"left:80%;background:#45b7d1;animation-delay:1.4s;\"></div>\n            <div class=\"confetti\" style=\"left:90%;background:#ffd700;animation-delay:1.6s;\"></div>\n        </div>\n\n        <!-- Hero Banner -->\n        <div style=\"background:linear-gradient(135deg,#667eea 0%,#764ba2 50%,#f093fb 100%);padding:60px 40px;text-align:center;position:relative;overflow:hidden;\">\n            <!-- Decorative circles -->\n            <div style=\"position:absolute;top:-50px;right:-50px;width:200px;height:200px;background:rgba(255,255,255,0.1);border-radius:50%;\"></div>\n            <div style=\"position:absolute;bottom:-30px;left:-30px;width:150px;height:150px;background:rgba(255,255,255,0.1);border-radius:50%;\"></div>\n            \n            <!-- Trophy Icon -->\n            <div class=\"pulse\" style=\"width:120px;height:120px;background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);border-radius:50%;margin:0 auto 25px;display:flex;align-items:center;justify-content:center;box-shadow:0 15px 40px rgba(255,215,0,0.5);border:5px solid rgba(255,255,255,0.3);position:relative;z-index:1;\">\n                <span style=\"font-size:60px;\">🏆</span>\n            </div>\n            \n            <h1 style=\"color:#ffffff;margin:0 0 15px 0;font-size:42px;font-weight:800;letter-spacing:-1px;text-shadow:0 4px 12px rgba(0,0,0,0.3);position:relative;z-index:1;\">\n                🎊 CHÚC MỪNG! 🎊\n            </h1>\n            <div style=\"background:rgba(255,255,255,0.95);padding:20px 30px;border-radius:50px;display:inline-block;margin:0 auto;box-shadow:0 8px 24px rgba(0,0,0,0.2);position:relative;z-index:1;\">\n                <p style=\"color:#667eea;margin:0;font-size:24px;font-weight:700;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;\">\n                    BẠN ĐÃ TRÚNG TUYỂN!\n                </p>\n            </div>\n        </div>\n\n        <!-- Main Content -->\n        <div style=\"padding:50px 40px;position:relative;z-index:1;\">\n            \n            <!-- Greeting -->\n            <div class=\"animate-in\" style=\"text-align:center;margin-bottom:40px;\">\n                <p style=\"color:#2d3748;font-size:18px;line-height:1.8;margin:0 0 10px 0;\">\n                    Kính gửi <strong style=\"color:#667eea;font-size:22px;font-weight:700;\">[Tên ứng viên]</strong>,\n                </p>\n                <div style=\"width:80px;height:4px;background:linear-gradient(90deg,#ffd700,#ffed4e);margin:15px auto;border-radius:2px;\"></div>\n            </div>\n\n            <!-- Success Message -->\n            <div style=\"background:linear-gradient(135deg,#fff5e6 0%,#ffe4b5 100%);border:3px solid #ffd700;padding:35px;margin:30px 0;border-radius:16px;box-shadow:0 8px 24px rgba(255,215,0,0.2);position:relative;overflow:hidden;\">\n                <div style=\"position:absolute;top:-20px;right:-20px;font-size:100px;opacity:0.1;\">🌟</div>\n                <div style=\"display:flex;align-items:start;position:relative;z-index:1;\">\n                    <span style=\"font-size:32px;margin-right:20px;flex-shrink:0;\">✨</span>\n                    <div>\n                        <p style=\"color:#b8860b;font-size:20px;margin:0 0 15px 0;font-weight:700;\">\n                            Tin tuyệt vời!\n                        </p>\n                        <p style=\"color:#8b6914;font-size:17px;line-height:1.8;margin:0;\">\n                            Sau quá trình tuyển chọn kỹ lưỡng, chúng tôi vô cùng hân hoan thông báo bạn đã <strong style=\"color:#b8860b;\">CHÍNH THỨC TRÚNG TUYỂN</strong> vào vị trí <strong style=\"color:#b8860b;\">[Tên vị trí]</strong> tại Công ty XYZ!\n                        </p>\n                    </div>\n                </div>\n            </div>\n\n            <p style=\"color:#4a5568;font-size:16px;line-height:1.9;margin:0 0 25px 0;\">\n                Chúng tôi rất ấn tượng với kinh nghiệm, kỹ năng và sự nhiệt huyết của bạn trong suốt quá trình phỏng vấn. Bạn đã xuất sắc vượt qua tất cả các vòng tuyển chọn và chứng minh mình là ứng viên phù hợp nhất cho vị trí này.\n            </p>\n\n\n\n            <!-- Benefits -->\n            <div style=\"background:linear-gradient(135deg,#f0fdf4 0%,#d1fae5 100%);border-left:5px solid #10b981;padding:30px;margin:30px 0;border-radius:12px;box-shadow:0 4px 16px rgba(16,185,129,0.15);\">\n                <h3 style=\"color:#047857;font-size:20px;margin:0 0 20px 0;font-weight:700;display:flex;align-items:center;\">\n                    <span style=\"font-size:24px;margin-right:12px;\">🎁</span>\n                    QUYỀN LỢI HẤP DẪN\n                </h3>\n                <div style=\"color:#065f46;font-size:15px;line-height:1.9;\">\n                    <p style=\"margin:0 0 10px 0;\">✅ Bảo hiểm xã hội, y tế, thất nghiệp đầy đủ theo quy định</p>\n                    <p style=\"margin:0 0 10px 0;\">✅ Thưởng hiệu suất hàng quý + thưởng lễ, tết</p>\n                    <p style=\"margin:0 0 10px 0;\">✅ Review lương định kỳ 6 tháng/lần</p>\n                    <p style=\"margin:0 0 10px 0;\">✅ Du lịch, team building, các hoạt động văn hóa công ty</p>\n                    <p style=\"margin:0 0 10px 0;\">✅ Đào tạo và phát triển nghề nghiệp</p>\n                    <p style=\"margin:0;\">✅ Môi trường làm việc chuyên nghiệp, năng động</p>\n                </div>\n            </div>\n\n            <!-- Next Steps -->\n            <div style=\"background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border-left:5px solid #f59e0b;padding:30px;margin:30px 0;border-radius:12px;box-shadow:0 4px 16px rgba(245,158,11,0.15);\">\n                <h3 style=\"color:#92400e;font-size:20px;margin:0 0 20px 0;font-weight:700;display:flex;align-items:center;\">\n                    <span style=\"font-size:24px;margin-right:12px;\">📝</span>\n                    CÁC BƯỚC TIẾP THEO\n                </h3>\n                <div style=\"color:#78350f;font-size:15px;line-height:1.9;\">\n                    <p style=\"margin:0 0 15px 0;\"><strong>1️⃣ Xác nhận nhận việc:</strong> Vui lòng phản hồi email này trong vòng <strong style=\"color:#b45309;\">3 ngày làm việc</strong> để xác nhận bạn chấp nhận vị trí.</p>\n                    <p style=\"margin:0 0 15px 0;\"><strong>2️⃣ Chuẩn bị hồ sơ:</strong> Gửi các giấy tờ cần thiết (CMND/CCCD, sơ yếu lý lịch, bằng cấp, giấy khám sức khỏe).</p>\n                    <p style=\"margin:0 0 15px 0;\"><strong>3️⃣ Ký hợp đồng:</strong> Đến văn phòng vào ngày [DD/MM/YYYY] để hoàn tất thủ tục.</p>\n                    <p style=\"margin:0;\"><strong>4️⃣ Onboarding:</strong> Tham gia buổi định hướng nhân viên mới vào ngày đầu tiên.</p>\n                </div>\n            </div>\n\n            <!-- Welcome Message -->\n            <div style=\"text-align:center;margin:40px 0;padding:35px;background:linear-gradient(135deg,#faf5ff 0%,#e9d5ff 100%);border-radius:16px;box-shadow:0 4px 16px rgba(124,58,237,0.1);\">\n                <span style=\"font-size:48px;display:block;margin-bottom:15px;\">🚀</span>\n                <p style=\"color:#5b21b6;font-size:19px;line-height:1.8;margin:0;font-weight:600;\">\n                    Chào mừng bạn đến với gia đình XYZ!<br>\n                    Chúng tôi rất mong chờ được làm việc cùng bạn!\n                </p>\n            </div>\n\n            <p style=\"color:#4a5568;font-size:16px;line-height:1.8;margin:30px 0 0 0;\">\n                Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi qua email hoặc số điện thoại bên dưới.\n            </p>\n\n            <div style=\"margin-top:40px;padding-top:30px;border-top:2px solid #e2e8f0;\">\n                <p style=\"color:#2d3748;font-size:16px;margin:0 0 5px 0;font-weight:600;\">\n                    Một lần nữa, xin chúc mừng! 🎉\n                </p>\n                <p style=\"color:#667eea;font-size:18px;margin:0;font-weight:700;\">\n                    Phòng Nhân sự - Công ty XYZ\n                </p>\n            </div>\n        </div>\n\n        <!-- Footer -->\n        <div style=\"background:linear-gradient(135deg,#1e293b 0%,#334155 100%);padding:40px;text-align:center;color:#ffffff;\">\n            <div style=\"margin-bottom:25px;\">\n                <div style=\"display:inline-block;margin:0 20px;font-size:15px;\">\n                    <span style=\"font-size:20px;vertical-align:middle;\">📧</span>\n                    <a href=\"mailto:hr@company.com\" style=\"color:#60a5fa;text-decoration:none;font-weight:600;margin-left:8px;\">hr@company.com</a>\n                </div>\n                <div style=\"display:inline-block;margin:0 20px;font-size:15px;\">\n                    <span style=\"font-size:20px;vertical-align:middle;\">📞</span>\n                    <span style=\"color:#ffffff;font-weight:600;margin-left:8px;\">(024) 1234 5678</span>\n                </div>\n            </div>\n            <p style=\"color:#cbd5e1;font-size:14px;margin:0 0 20px 0;\">\n                🏢 <strong>Địa chỉ:</strong> Đà Nẵng, Việt Nam\n            </p>\n            <div style=\"padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);\">\n                <p style=\"color:#94a3b8;font-size:13px;margin:0;line-height:1.6;\">\n                    © 2024 Công ty XYZ. Tất cả quyền được bảo lưu.\n                </p>\n            </div>\n        </div>\n\n    </div>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1312,
+        400
+      ],
+      "id": "c98ad786-5c99-4f77-b42d-b0060de4c6df",
+      "name": "Mail đậu",
+      "webhookId": "cf978bb1-9988-4c11-9765-15b7c15b4592",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ov7uJvhD7i5Z1ZrI",
+          "name": "Gmail account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "Kết quả tuyển dụng",
+        "message": "=<!DOCTYPE html>\n<html lang=\"vi\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Thông báo kết quả tuyển dụng</title>\n</head>\n<body style=\"margin:0;padding:20px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;\">\n    \n    <div style=\"max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);\">\n        \n        <!-- Header với logo -->\n        <div style=\"background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:50px 40px;text-align:center;position:relative;\">\n            <div style=\"width:80px;height:80px;background:rgba(255,255,255,0.2);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);border:3px solid rgba(255,255,255,0.3);\">\n                <span style=\"font-size:40px;font-weight:bold;color:#ffffff;\">XYZ</span>\n            </div>\n            <h1 style=\"color:#ffffff;margin:0;font-size:32px;font-weight:700;letter-spacing:-0.5px;text-shadow:0 2px 4px rgba(0,0,0,0.1);\">\n                Công ty XYZ\n            </h1>\n            <p style=\"color:rgba(255,255,255,0.9);margin:10px 0 0 0;font-size:16px;\">\n                Nơi khởi đầu sự nghiệp của bạn\n            </p>\n        </div>\n\n        <!-- Content -->\n        <div style=\"padding:50px 40px;\">\n            <div style=\"text-align:center;margin-bottom:35px;\">\n                <h2 style=\"color:#1a202c;font-size:26px;margin:0 0 10px 0;font-weight:700;\">\n                    Thông báo kết quả tuyển dụng\n                </h2>\n                <div style=\"width:60px;height:4px;background:linear-gradient(90deg,#667eea,#764ba2);margin:0 auto;border-radius:2px;\"></div>\n            </div>\n\n            <p style=\"color:#2d3748;font-size:16px;line-height:1.8;margin:0 0 20px 0;\">\n                Kính gửi <strong style=\"color:#667eea;font-weight:600;\">[Tên ứng viên]</strong>,\n            </p>\n\n            <p style=\"color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px 0;\">\n                Cảm ơn bạn đã dành thời gian ứng tuyển vào vị trí <strong style=\"color:#2d3748;\">[Tên vị trí]</strong> tại công ty chúng tôi. Chúng tôi đánh giá cao sự quan tâm và nỗ lực của bạn trong quá trình ứng tuyển.\n            </p>\n\n            <!-- Notice Box -->\n            <div style=\"background:linear-gradient(135deg,#fff5f5 0%,#fed7d7 100%);border-left:5px solid #fc8181;padding:25px;margin:30px 0;border-radius:12px;box-shadow:0 4px 12px rgba(252,129,129,0.1);\">\n                <div style=\"display:flex;align-items:start;\">\n                    <span style=\"font-size:24px;margin-right:15px;\">⚠️</span>\n                    <p style=\"color:#742a2a;font-size:16px;line-height:1.8;margin:0;font-weight:500;\">\n                        Sau khi xem xét kỹ lưỡng, chúng tôi rất tiếc phải thông báo rằng hồ sơ của bạn chưa phù hợp với yêu cầu của vị trí tại thời điểm hiện tại.\n                    </p>\n                </div>\n            </div>\n\n            <p style=\"color:#4a5568;font-size:16px;line-height:1.8;margin:0 0 20px 0;\">\n                Đây là một quyết định khó khăn, vì chúng tôi đã nhận được rất nhiều hồ sơ xuất sắc. Chúng tôi khuyến khích bạn tiếp tục theo dõi các cơ hội tuyển dụng khác tại công ty trong tương lai.\n            </p>\n\n            <!-- Encouragement Box -->\n            <div style=\"background:linear-gradient(135deg,#e6fffa 0%,#b2f5ea 100%);border-left:5px solid #38b2ac;padding:25px;margin:30px 0;border-radius:12px;\">\n                <p style=\"color:#234e52;font-size:15px;line-height:1.8;margin:0;\">\n                    <strong style=\"display:block;margin-bottom:10px;font-size:16px;\">💡 Lời khuyên từ chúng tôi:</strong>\n                    Hãy tiếp tục phát triển kỹ năng và kinh nghiệm của bạn. Chúng tôi hy vọng sẽ có cơ hội hợp tác cùng bạn trong tương lai!\n                </p>\n            </div>\n\n            <p style=\"color:#2d3748;font-size:16px;line-height:1.8;margin:30px 0 0 0;font-weight:500;\">\n                Chúc bạn nhiều thành công trên con đường sự nghiệp!\n            </p>\n\n            <div style=\"margin-top:40px;padding-top:30px;border-top:2px solid #e2e8f0;\">\n                <p style=\"color:#2d3748;font-size:16px;margin:0 0 5px 0;font-weight:600;\">\n                    Trân trọng,\n                </p>\n                <p style=\"color:#667eea;font-size:17px;margin:0;font-weight:700;\">\n                    Phòng Nhân sự - Công ty XYZ\n                </p>\n            </div>\n        </div>\n\n        <!-- Footer -->\n        <div style=\"background:linear-gradient(135deg,#f7fafc 0%,#edf2f7 100%);padding:35px 40px;border-top:1px solid #e2e8f0;\">\n            <div style=\"text-align:center;\">\n                <div style=\"margin-bottom:20px;\">\n                    <span style=\"display:inline-block;margin:0 15px;color:#4a5568;font-size:14px;\">\n                        📧 <a href=\"mailto:hr@company.com\" style=\"color:#667eea;text-decoration:none;font-weight:500;\">hr@company.com</a>\n                    </span>\n                    <span style=\"display:inline-block;margin:0 15px;color:#4a5568;font-size:14px;\">\n                        📞 <strong style=\"color:#2d3748;\">(024) 1234 5678</strong>\n                    </span>\n                </div>\n                <p style=\"color:#718096;font-size:14px;margin:0 0 15px 0;\">\n                    🏢 <strong>Địa chỉ:</strong> Đà Nẵng, Việt Nam\n                </p>\n                <div style=\"margin-top:20px;padding-top:20px;border-top:1px solid #cbd5e0;\">\n                    <p style=\"color:#a0aec0;font-size:13px;margin:0;line-height:1.6;\">\n                        © 2024 Công ty XYZ. Tất cả quyền được bảo lưu.<br>\n                        Email này được gửi tự động, vui lòng không trả lời trực tiếp.\n                    </p>\n                </div>\n            </div>\n        </div>\n\n    </div>\n\n</body>\n</html>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -1296,
+        672
+      ],
+      "id": "c40385b2-72c7-4779-822d-23145c967946",
+      "name": "Mail rớt",
+      "webhookId": "cf978bb1-9988-4c11-9765-15b7c15b4592",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "58BEjeruYgRKuNDk",
+          "name": "Gmail account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Auto up Post",
+        "height": 304,
+        "width": 1936,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3920,
+        992
+      ],
+      "typeVersion": 1,
+      "id": "1ef2530b-273c-455e-a9f8-cdeb193b7f77",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "scheduled_jobs",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "todo"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -3632,
+        1072
+      ],
+      "id": "b3ec79e5-953d-44b3-b13b-7fb20390cbae",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "wvkX4fwrDnsrRx3M",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -3840,
+        1072
+      ],
+      "id": "05ab6cc7-4ec8-4fa9-8b4a-32ba190dba70",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e776060a-72c6-4459-be4c-037401c32a25",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c7b75415-5d39-4e93-965b-fc5b38454b61",
+              "name": "job_title",
+              "value": "={{ $json.job_title }}",
+              "type": "string"
+            },
+            {
+              "id": "7d9bd744-7265-4c9d-8966-66c5d34b22e8",
+              "name": "apply_link",
+              "value": "={{ $json.apply_link }}",
+              "type": "string"
+            },
+            {
+              "id": "2222a518-1b09-4acb-bda7-96a8254bb414",
+              "name": "scheduled_time",
+              "value": "={{ $json.scheduled_time }}",
+              "type": "string"
+            },
+            {
+              "id": "f5a7b794-1883-43c8-a953-5d284f9cb9b8",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "65a30763-8838-4f35-9ee4-c9b5ec0f59bf",
+              "name": "job_desc",
+              "value": "={{ $json.job_desc }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3312,
+        1072
+      ],
+      "id": "bad8e4cb-e42f-4663-b8c7-8cc8ce27fca3",
+      "name": "Edit Fields3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bfa8bc9b-abc9-441b-a1ed-ea37d7460e0a",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "todo",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "3c38d155-481e-47a2-be3e-441ef3e4c003",
+              "leftValue": "={{ $json.scheduled_time }}",
+              "rightValue": "={{ $now }}\n",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -3152,
+        1072
+      ],
+      "id": "32ff5bb3-a2ff-4a79-85e8-3b0b82df56fe",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Viết bài đăng tuyển dụng Facebook dựa trên thông tin sau:\n\n- Vị trí công việc: {{ $('Edit Fields3').item.json['job_title'] }}\n- Mô tả công việc: {{ $('Edit Fields3').item.json['job_desc'] }}\n- Link ứng tuyển: {{ $('Edit Fields3').item.json['apply_link'] }}\n\nYêu cầu:\n- Ngắn gọn, dễ đọc\n- Có CTA kêu gọi ứng tuyển\n- Phù hợp đăng Facebook\n- Chỉ đưa ra nội dung cho bài đăng, ko cần thêm lời đã tạo thành công\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -2944,
+        1056
+      ],
+      "id": "bfc5a150-b8db-4067-8a5f-3a8ba4c669cc",
+      "name": "Message a model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Dhx7KffvzTp0urud",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd144048-d6bf-483e-9612-7e287313b90c",
+              "name": "content.parts[0].text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2624,
+        1056
+      ],
+      "id": "c2acc50e-6d76-424e-97fd-114db1576227",
+      "name": "Edit Fields4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/962307496958612/feed",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "EAAPwSGp1w7sBQfdFMjuPz535CnLo4hHFdX7frplIO4boODHEXzubVamhrxUX2m0uy1QLo2ZBSIPYZCzEUCp5k17bKOb1uBZA7ZBXctZCCszzqJZARtBmW0HT5Xo6ZClvvQLP5yytVwZBxX2Y2FTjQfHC7ZC4da4SbuegpX0DGOpO3RHmtUbPeX62fEyNRAqBZAHh6bZChgEOaXv6HGPD7TOZACTiCI3lXAtWqZBMEyQZAajcf1p4D6"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.content.parts[0].text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2448,
+        1056
+      ],
+      "id": "2d2d6b9d-5177-4aac-9aaf-2a191e72cb55",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "scheduled_jobs",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('If1').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "done"
+            },
+            {
+              "fieldId": "posted_time",
+              "fieldValue": "= {{$now}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2240,
+        1056
+      ],
+      "id": "2fe94c3a-0428-4681-8505-7f3d85bb42b7",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "wvkX4fwrDnsrRx3M",
+          "name": "Supabase account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Function Item(JSON string -> object)": {
+      "main": [
+        [
+          {
+            "node": "Set AI Scored Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Function Item(JSON string -> object)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Get Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Job": {
+      "main": [
+        [
+          {
+            "node": "Create Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Candidate": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set AI Scored Status": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Quyết định HR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get CV",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get CV": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quyết định HR": {
+      "main": [
+        [
+          {
+            "node": "Mail đậu",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mail rớt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mail đậu": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Message a model2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6064e138-2939-4a5b-8a64-74fd114e6092",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6da6eef0b4983ed52a71de8ab82823c94ab7d804f39190d2537dc5679e9636a6"
+  },
+  "id": "6GVH3XNJxpDgmhyw",
+  "tags": []
+}

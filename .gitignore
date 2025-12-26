@@ -29,3 +29,6 @@ Thumbs.db
 # N8N workflow exports with credentials
 wf/*.json
 Ai-recruitment-agent*.json
+# Service account & credentials
+backend/service-account.json
+service-account.json

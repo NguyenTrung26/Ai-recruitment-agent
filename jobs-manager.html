@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Quản lý lịch tuyển dụng</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 30px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  min-height: 100vh;
+}
+
+.container {
+  background: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  max-width: 1200px;
+  margin: auto;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background: #667eea;
+  color: white;
+}
+
+tr:hover {
+  background: #f5f5f5;
+}
+
+.status-todo { background:#ffc107; color:#000; padding:4px 8px; border-radius:4px; }
+.status-done { background:#28a745; color:#fff; padding:4px 8px; border-radius:4px; }
+.status-cancel { background:#dc3545; color:#fff; padding:4px 8px; border-radius:4px; }
+
+button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-edit { background:#17a2b8; color:white; }
+.btn-delete { background:#dc3545; color:white; margin-left:5px; }
+
+.loading {
+  text-align: center;
+  padding: 20px;
+}
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background: #fff;
+  width: 420px;
+  margin: 80px auto;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.modal-content input,
+.modal-content textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.modal-actions {
+  text-align: right;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <h2>📅 Danh sách lịch tuyển dụng</h2>
+
+  <div id="loading" class="loading">⏳ Đang tải dữ liệu...</div>
+
+  <table id="jobTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Vị trí</th>
+        <th>Mô tả</th>
+        <th>Link</th>
+        <th>Thời gian đăng</th>
+        <th>Trạng thái</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- MODAL EDIT -->
+<div class="modal" id="editModal">
+  <div class="modal-content">
+    <h3>✏️ Sửa lịch</h3>
+
+    <input type="hidden" id="edit-id" />
+    <input id="edit-title" placeholder="Vị trí tuyển" />
+    <textarea id="edit-desc" placeholder="Mô tả"></textarea>
+    <input id="edit-link" placeholder="Link ứng tuyển" />
+    <input type="datetime-local" id="edit-time" />
+
+    <div class="modal-actions">
+      <button onclick="closeModal()">Huỷ</button>
+      <button class="btn-edit" onclick="submitEdit()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const API_LIST   = "https://n8n-group5.len-handmade.top/webhook/get-jobs";
+const API_UPDATE = "https://n8n-group5.len-handmade.top/webhook/update-job";
+const API_DELETE = "https://n8n-group5.len-handmade.top/webhook/delete-job";
+const API_KEY    = "YOUR_SECRET_KEY";
+/* ========================================= */
+
+/* LOAD LIST */
+async function loadJobs() {
+  document.getElementById("loading").style.display = "block";
+
+  const res = await fetch(API_LIST);
+  const data = await res.json();
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  data.forEach(job => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${job.id}</td>
+        <td><b>${job.job_title}</b></td>
+        <td>${job.job_desc || ""}</td>
+        <td><a href="${job.apply_link}" target="_blank">📝</a></td>
+        <td>${new Date(job.scheduled_time).toLocaleString("vi-VN")}</td>
+        <td><span class="status-${job.status}">${job.status}</span></td>
+        <td>
+          <button class="btn-edit" onclick='openEdit(${JSON.stringify(job)})'>✏️</button>
+          <button class="btn-delete" onclick='deleteJob(${job.id})'>❌</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("jobTable").style.display = "table";
+}
+
+/* DELETE */
+async function deleteJob(id) {
+  if (!confirm("Bạn chắc chắn muốn huỷ lịch này?")) return;
+
+  const res = await fetch(API_DELETE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": API_KEY
+    },
+    body: JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  loadJobs();
+}
+
+/* OPEN MODAL */
+function openEdit(job) {
+  document.getElementById("edit-id").value = job.id;
+  document.getElementById("edit-title").value = job.job_title;
+  document.getElementById("edit-desc").value = job.job_desc || "";
+  document.getElementById("edit-link").value = job.apply_link || "";
+  document.getElementById("edit-time").value =
+    job.scheduled_time.substring(0,16);
+
+  document.getElementById("editModal").style.display = "block";
+}
+
+/* CLOSE MODAL */
+function closeModal() {
+  document.getElementById("editModal").style.display = "none";
+}
+
+/* SUBMIT EDIT */
+async function submitEdit() {
+  const payload = {
+    id: document.getElementById("edit-id").value,
+    job_title: document.getElementById("edit-title").value,
+    job_desc: document.getElementById("edit-desc").value,
+    apply_link: document.getElementById("edit-link").value,
+    scheduled_time: document.getElementById("edit-time").value
+  };
+
+  const res = await fetch(API_UPDATE, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": API_KEY
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  alert(data.message);
+  closeModal();
+  loadJobs();
+}
+
+/* INIT */
+loadJobs();
+</script>
+</body>
+</html>

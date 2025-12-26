@@ -94,21 +94,70 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 /**
+ * GET /api/schedules/:id
+ * Get single schedule by ID
+ */
+router.get("/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from("scheduled_jobs")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      logger.error({ error, id }, "Schedule not found");
+      return res.status(404).json({ error: "Schedule not found" });
+    }
+
+    logger.info({ id }, "Schedule fetched");
+    return res.json({
+      id: data.id,
+      job_title: data.job_title,
+      job_desc: data.job_desc,
+      scheduled_time: data.scheduled_time,
+      status: data.status,
+      apply_link: data.apply_link,
+      posted_time: data.posted_time,
+    });
+  } catch (error: unknown) {
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    logger.error({ error: errorMessage }, "Schedule GET by ID error");
+    return res.status(500).json({
+      error: "Internal server error",
+      details: errorMessage,
+    });
+  }
+});
+
+/**
  * PUT /api/schedules/:id
  * Update schedule status
  */
 router.put("/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { status } = req.body;
+    const { job_title, job_desc, apply_link, scheduled_time, status } =
+      req.body;
 
-    if (!status) {
-      return res.status(400).json({ error: "Status is required" });
+    // Build update object with only provided fields
+    const updateData: any = {};
+    if (job_title) updateData.job_title = job_title;
+    if (job_desc) updateData.job_desc = job_desc;
+    if (apply_link) updateData.apply_link = apply_link;
+    if (scheduled_time) updateData.scheduled_time = scheduled_time;
+    if (status) updateData.status = status;
+
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ error: "No fields to update" });
     }
 
     const { data, error } = await supabase
       .from("scheduled_jobs")
-      .update({ status })
+      .update(updateData)
       .eq("id", id)
       .select();
 
@@ -117,10 +166,10 @@ router.put("/:id", async (req: Request, res: Response) => {
       return res.status(500).json({ error: "Failed to update schedule" });
     }
 
-    logger.info({ id, status }, "Schedule updated");
+    logger.info({ id, updateData }, "Schedule updated");
     return res.json({
       success: true,
-      message: "Status updated successfully",
+      message: "Schedule updated successfully",
       data,
     });
   } catch (error: unknown) {

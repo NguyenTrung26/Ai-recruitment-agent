@@ -5,18 +5,23 @@ import Link from "next/link";
 
 interface Schedule {
   id: string | number;
-  title: string;
-  content: string;
+  job_title: string;
+  job_desc: string;
   scheduled_time: string;
   status: "todo" | "done" | "cancel";
   apply_link: string;
-  created_at: string;
+  posted_time?: string;
+  created_at?: string;
 }
 
 export default function SchedulesPage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | number | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | number | null>(
+    null
+  );
 
   const loadSchedules = async () => {
     try {
@@ -38,6 +43,24 @@ export default function SchedulesPage() {
       setError(`❌ Lỗi: ${message}`);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteSchedule = async (id: string | number) => {
+    try {
+      const response = await fetch(`/api/schedules/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Xóa lịch thất bại");
+      }
+
+      setSchedules(schedules.filter((s) => s.id !== id));
+      setDeleteConfirm(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Lỗi";
+      setError(`❌ ${message}`);
     }
   };
 
@@ -155,22 +178,16 @@ export default function SchedulesPage() {
                 <thead>
                   <tr className="bg-blue-600 dark:bg-blue-800">
                     <th className="px-6 py-3 text-left text-white font-semibold">
-                      ID
+                      Vị trí tuyển
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
-                      Tiêu đề
-                    </th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">
-                      Nội dung
+                      Mô tả
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
                       Thời gian đăng
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
                       Trạng thái
-                    </th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">
-                      Ngày tạo
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
                       Hành động
@@ -183,14 +200,11 @@ export default function SchedulesPage() {
                       key={item.id}
                       className="hover:bg-gray-50 dark:hover:bg-slate-700 transition"
                     >
-                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100">
-                        {item.id}
-                      </td>
                       <td className="px-6 py-3 text-gray-900 dark:text-gray-100 font-semibold">
-                        {item.title}
+                        {item.job_title}
                       </td>
                       <td className="px-6 py-3 text-gray-600 dark:text-gray-400 truncate max-w-xs">
-                        {item.content}
+                        {item.job_desc}
                       </td>
                       <td className="px-6 py-3 text-gray-600 dark:text-gray-400">
                         {formatDateTime(item.scheduled_time)}
@@ -198,18 +212,50 @@ export default function SchedulesPage() {
                       <td className="px-6 py-3">
                         {getStatusBadge(item.status)}
                       </td>
-                      <td className="px-6 py-3 text-gray-600 dark:text-gray-400">
-                        {formatDateTime(item.created_at)}
-                      </td>
                       <td className="px-6 py-3">
-                        <a
-                          href={item.apply_link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline font-semibold"
-                        >
-                          📝 Xem
-                        </a>
+                        <div className="flex gap-2">
+                          <a
+                            href={item.apply_link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline text-sm font-semibold"
+                          >
+                            📝 Xem
+                          </a>
+                          <Link
+                            href={`/admin/schedules/${item.id}`}
+                            className="text-amber-600 hover:underline text-sm font-semibold"
+                          >
+                            ✏️ Sửa
+                          </Link>
+                          <button
+                            onClick={() => setDeleteConfirm(item.id)}
+                            className="text-red-600 hover:underline text-sm font-semibold"
+                          >
+                            ❌ Xóa
+                          </button>
+                          {deleteConfirm === item.id && (
+                            <div className="absolute bg-white dark:bg-slate-700 rounded shadow-lg p-3 z-50">
+                              <p className="text-sm mb-2">
+                                Bạn chắc chắn muốn xóa?
+                              </p>
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => deleteSchedule(item.id)}
+                                  className="px-3 py-1 bg-red-600 text-white rounded text-xs"
+                                >
+                                  Xóa
+                                </button>
+                                <button
+                                  onClick={() => setDeleteConfirm(null)}
+                                  className="px-3 py-1 bg-gray-400 text-white rounded text-xs"
+                                >
+                                  Hủy
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}

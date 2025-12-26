@@ -1,25 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 
-export default function AddSchedulePage() {
+interface Schedule {
+  id: string | number;
+  job_title: string;
+  job_desc: string;
+  apply_link: string;
+  scheduled_time: string;
+  status: "todo" | "done" | "cancel";
+}
+
+export default function EditSchedulePage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const params = useParams();
+  const id = params.id;
+
+  const [formData, setFormData] = useState<Omit<Schedule, "id">>({
     job_title: "",
     job_desc: "",
     apply_link: "",
     scheduled_time: "",
+    status: "todo",
   });
+
   const [message, setMessage] = useState<{
     text: string;
     type: "success" | "error";
   } | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const loadSchedule = async () => {
+      try {
+        const response = await fetch(`/api/schedules/${id}`);
+        if (!response.ok) {
+          throw new Error("Không tìm thấy lịch");
+        }
+        const data: Schedule = await response.json();
+
+        // Convert ISO string to datetime-local format
+        const date = new Date(data.scheduled_time);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const datetimeLocal = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+        setFormData({
+          job_title: data.job_title,
+          job_desc: data.job_desc,
+          apply_link: data.apply_link,
+          scheduled_time: datetimeLocal,
+          status: data.status,
+        });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Lỗi";
+        setMessage({ text: `❌ ${message}`, type: "error" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSchedule();
+  }, [id]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -28,25 +81,17 @@ export default function AddSchedulePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(null);
-    setLoading(true);
+    setSaving(true);
 
     try {
-      // Parse datetime-local and force it to be interpreted as Vietnam time (UTC+7)
       const [datePart, timePart] = formData.scheduled_time.split("T");
       const [year, month, day] = datePart.split("-").map(Number);
       const [hour, minute] = timePart.split(":").map(Number);
 
-      // Create Date object as if it's in user's local timezone
       const localDate = new Date(year, month - 1, day, hour, minute);
-
-      // Get browser's timezone offset in minutes
       const browserOffset = localDate.getTimezoneOffset();
-      const vietnamOffset = -420; // UTC+7 = -420 minutes from UTC
-
-      // Calculate correction to convert to Vietnam time (UTC+7)
+      const vietnamOffset = -420;
       const correction = (vietnamOffset - browserOffset) * 60 * 1000;
-
-      // Create UTC date with correction
       const utcDate = new Date(localDate.getTime() + correction);
       const isoString = utcDate.toISOString();
 
@@ -55,28 +100,22 @@ export default function AddSchedulePage() {
         job_desc: formData.job_desc,
         apply_link: formData.apply_link,
         scheduled_time: isoString,
-        status: "todo",
+        status: formData.status,
       };
 
-      const response = await fetch(`/api/schedules`, {
-        method: "POST",
+      const response = await fetch(`/api/schedules/${id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (response.ok) {
-        setMessage({ text: "✅ Đã thêm lịch thành công!", type: "success" });
-        setFormData({
-          job_title: "",
-          job_desc: "",
-          apply_link: "",
-          scheduled_time: "",
-        });
+        setMessage({ text: "✅ Cập nhật lịch thành công!", type: "success" });
         setTimeout(() => router.push("/admin/schedules"), 2000);
       } else {
         const errorData = await response.json();
         setMessage({
-          text: `❌ Lỗi: ${errorData.error || "Không thể thêm lịch"}`,
+          text: `❌ Lỗi: ${errorData.error || "Không thể cập nhật lịch"}`,
           type: "error",
         });
       }
@@ -84,9 +123,17 @@ export default function AddSchedulePage() {
       const errorText = err instanceof Error ? err.message : "Lỗi kết nối";
       setMessage({ text: `❌ Lỗi: ${errorText}`, type: "error" });
     } finally {
-      setLoading(false);
+      setSaving(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-slate-900 py-12 flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-400">⏳ Đang tải...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-950 dark:to-slate-900 py-12">
@@ -100,7 +147,7 @@ export default function AddSchedulePage() {
 
         <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
-            ➕ Thêm Lịch Tuyển Dụng
+            ✏️ Chỉnh sửa Lịch Tuyển Dụng
           </h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -175,6 +222,25 @@ export default function AddSchedulePage() {
               />
             </div>
 
+            <div>
+              <label
+                htmlFor="status"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Trạng thái
+              </label>
+              <select
+                id="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="todo">⏳ Chưa đăng</option>
+                <option value="done">✅ Đã đăng</option>
+                <option value="cancel">❌ Hủy</option>
+              </select>
+            </div>
+
             {message && (
               <div
                 className={`p-4 rounded-lg ${
@@ -189,10 +255,10 @@ export default function AddSchedulePage() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={saving}
               className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white py-3 rounded-lg font-semibold transition"
             >
-              {loading ? "⏳ Đang xử lý..." : "✅ Thêm lịch"}
+              {saving ? "⏳ Đang xử lý..." : "✅ Cập nhật"}
             </button>
           </form>
         </div>

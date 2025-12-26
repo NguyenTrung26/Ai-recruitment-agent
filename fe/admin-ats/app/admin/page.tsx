@@ -29,10 +29,13 @@ export default function AdminPage() {
       }
 
       const data = await response.json();
-      if (!Array.isArray(data)) {
+      // Backend returns { count, candidates } or just array
+      const candidateList = Array.isArray(data) ? data : (data.candidates || []);
+      
+      if (!Array.isArray(candidateList)) {
         throw new Error("Invalid data format");
       }
-      setCandidates(data);
+      setCandidates(candidateList);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Unknown error";
       setError(message);

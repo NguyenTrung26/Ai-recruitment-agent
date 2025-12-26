@@ -1,0 +1,940 @@
+{
+  "name": "Telegram AutoReply",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2352,
+        1008
+      ],
+      "id": "b846905a-f23f-47b8-88c9-206398d4482d",
+      "name": "Telegram Trigger",
+      "webhookId": "15b5f3b4-8827-48e4-970b-a06cce66f93c",
+      "credentials": {
+        "telegramApi": {
+          "id": "8lO6zOXN4OwA5ARp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Lấy text từ tin nhắn mới (Extract Telegram), không phải từ Merge\nconst textRaw = ($('Extract Telegram').item.json.text || $json.text || \"\").toLowerCase().trim();\n\nfunction hasAny(keys) {\n  return keys.some(k => textRaw.includes(k));\n}\n\nlet intent = \"other\";\nif (hasAny([\"jd\", \"job\", \"mô tả\", \"mo ta\", \"vị trí\", \"vi tri\", \"position\"])) intent = \"job\";\nelse if (hasAny([\"process\", \"quy trình\", \"quy trinh\", \"vòng\", \"vong\", \"interview\", \"phỏng vấn\", \"phong van\"])) intent = \"process\";\nelse if (hasAny([\"timeline\", \"bao lâu\", \"bao lau\", \"khi nào\", \"khi nao\", \"mấy ngày\", \"may ngay\"])) intent = \"timeline\";\nelse if (hasAny([\"lương\", \"luong\", \"salary\", \"range\", \"budget\"])) intent = \"salary\";\nelse if (hasAny([\"apply\", \"ứng tuyển\", \"ung tuyen\", \"nộp cv\", \"nop cv\", \"gửi cv\", \"gui cv\"])) intent = \"apply\";\nelse if (textRaw === \"/start\" || hasAny([\"hello\", \"hi\", \"xin chào\", \"xin chao\"])) intent = \"greeting\";\n\nreturn [\n  {\n    json: {\n      ...$json,\n      intent,\n      text_clean: textRaw\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1440,
+        1152
+      ],
+      "id": "3bc11c4a-a48c-41fb-8598-32588b65f2f2",
+      "name": "Intent Router"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eeaf6fec-30a1-4bc4-abb1-1b00832829cd",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d259c74a-6d4a-4073-80ab-6671b9179349",
+              "name": "text",
+              "value": "={{ $json.message.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "dd6a246b-43d8-4c12-a728-07894d2c1fa2",
+              "name": "user_name",
+              "value": "={{ $json.message.from.username || $json.message.from.first_name || 'Bạn' }}",
+              "type": "string"
+            },
+            {
+              "id": "844d59f5-5382-4c44-9dd8-5ea33e1cc698",
+              "name": "message_id",
+              "value": "={{ $json.message.message_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1760,
+        1248
+      ],
+      "id": "1935b748-ddcd-417d-9814-f4038bd844be",
+      "name": "Extract Telegram"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "greeting",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "dd19028d-4b2d-4e88-9122-be7ab059a15b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "greeting"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ca450645-26f7-4e6d-98ec-928062ada652",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "job",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "job"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a83b0389-63c1-4b71-84ed-f57550af2a2b",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "process",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "process"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c451d54b-229e-4a80-b76d-4adbadff31fa",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "timeline",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "timeline"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6593225e-c2b5-4984-af86-386999738c79",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "salary",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "salary"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "70d29e15-e6ee-4341-9985-3ee6016c0ab7",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "apply",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "apply"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1533e70f-d54e-41f1-a4b8-ec04830676a7",
+                    "leftValue": "={{ $json.intent }}",
+                    "rightValue": "other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "fallback"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -832,
+        912
+      ],
+      "id": "c6f1acd9-54a4-4092-8bac-85e776a74d9e",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "77f6cf03-0b13-44a3-9ab7-a990f45296d0",
+              "name": "intent",
+              "value": "={{ $json.intent || 'fallback' }}",
+              "type": "string"
+            },
+            {
+              "id": "0f95dc5d-2e8a-4e6f-a2ee-88795aa61d6e",
+              "name": "user_text",
+              "value": "={{ $json.text_clean || $json.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "8559501a-3b09-4c6f-89e2-a76fcfa3098d",
+              "name": "prompt_context",
+              "value": "={{ (() => {\n  const intent = $json.intent || 'fallback';\n\n  const companyInfo = `\n=== THÔNG TIN CÔNG TY ===\nTên: VKU TOP 1 MIỀN TRUNG\nLĩnh vực: N8N, AI Automation, Chatbot Development\nĐịa chỉ: Đà Nẵng, Việt Nam\nWebsite: n8n.io\nEmail HR: hr@thaibabau.vku.com\n`;\n\n  const jobList = `\n=== VỊ TRÍ ĐANG TUYỂN ===\n1. N8N Automation Developer (Junior) - 12-18 triệu - 2 người\n2. N8N Automation Developer (Senior) - 25-40 triệu - 1 người\n3. AI Chatbot Developer (Mid) - 18-28 triệu - 2 người\n4. Project Manager (Mid/Senior) - 30-45 triệu - 1 người\n5. Business Analyst (Junior/Mid) - 15-25 triệu - 1 người\n`;\n\n  const jobRequirements = `\n=== YÊU CẦU TỪNG VỊ TRÍ ===\nN8N Developer Junior: n8n cơ bản, JavaScript/Python, REST API, JSON, Tiếng Anh đọc hiểu.\nN8N Developer Senior: 2+ năm n8n, JavaScript/TypeScript, tích hợp AI (OpenAI/Gemini/Claude), PostgreSQL/Supabase.\nAI Chatbot Developer: Kinh nghiệm chatbot Telegram/Messenger, LLM, prompt engineering, Python/Node.js.\nProject Manager: 2+ năm PM tech, Agile/Scrum, tiếng Anh giao tiếp.\nBusiness Analyst: Phân tích yêu cầu, viết tài liệu kỹ thuật, hiểu automation workflow.\n`;\n\n  const process = `\n=== QUY TRÌNH TUYỂN DỤNG ===\nBước 1: Nộp CV (PDF) qua email hoặc Telegram bot\nBước 2: HR review CV (2-3 ngày)\nBước 3: Test online nếu có (1-2 ngày)\nBước 4: Phỏng vấn kỹ thuật 45-60 phút\nBước 5: Phỏng vấn HR 30 phút\nBước 6: Gửi offer (3-5 ngày sau PV)\nTổng: 1-2 tuần từ nộp CV đến offer.\n`;\n\n  const salary = `\n=== THÔNG TIN LƯƠNG ===\n- N8N Developer Junior: 12-18 triệu/tháng\n- N8N Developer Senior: 25-40 triệu/tháng\n- AI Chatbot Developer: 18-28 triệu/tháng\n- Project Manager: 30-45 triệu/tháng\n- Business Analyst: 15-25 triệu/tháng\n`;\n\n  const benefits = `\n=== PHÚC LỢI ===\n- Lương tháng 13 + thưởng hiệu suất\n- Review lương 2 lần/năm\n- Bảo hiểm sức khỏe\n- Hybrid: 3 ngày office, 2 ngày remote\n- Budget học tập 5 triệu/năm\n`;\n\n  const applyGuide = `\n=== CÁCH ỨNG TUYỂN ===\nQua Telegram: Gửi CV (PDF) trực tiếp\nQua Email: hr@thaibabau.vku.com\nCần kèm: CV (PDF), vị trí, email, SĐT.\n`;\n\n  const contexts = {\n    greeting: `Bạn là HR chatbot của VKU TOP 1 MIỀN TRUNG. Chào thân thiện và hỏi cần hỗ trợ gì.\n${companyInfo}`,\n    \n    job: `Bạn là HR chatbot. Trả lời về vị trí tuyển dụng.\n${companyInfo}${jobList}${jobRequirements}`,\n    \n    process: `Bạn là HR chatbot. Trả lời về quy trình tuyển dụng.\n${companyInfo}${process}`,\n    \n    timeline: `Bạn là HR chatbot. Trả lời về timeline.\n${companyInfo}${process}`,\n    \n    salary: `Bạn là HR chatbot. Trả lời về lương và phúc lợi.\n${companyInfo}${salary}${benefits}`,\n    \n    apply: `Bạn là HR chatbot. Hướng dẫn cách ứng tuyển.\n${companyInfo}${applyGuide}${jobList}`,\n    \n    upload_cv: `Bạn là HR chatbot. Hướng dẫn upload CV qua Telegram.\n${companyInfo}${applyGuide}`,\n    \n    fallback: `Bạn là HR chatbot. Hỏi lại ngắn gọn + gợi ý menu: job, salary, process, timeline, apply.\n${companyInfo}${jobList}`\n  };\n\n  return contexts[intent] || contexts.fallback;\n})() }}\n```\n\n---\n\n### Bước 3: Xóa node Get Chat History (tạm thời)\n\nXóa hoặc disable node này để workflow chạy được trước.\n\n---\n\n### Tóm tắt flow đơn giản:\n```\nTelegram → Extract → Intent Router → HTTP Request1 → Switch → Build Prompt → AI Agent → Parse → PATCH → Send",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        1024
+      ],
+      "id": "cc2916de-ed7c-4eaa-92e5-c6020b86bf7c",
+      "name": "Build Prompt"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json.chat_id}}",
+        "text": "={{ $('Parse JSON Gemini').item.json.reply_text + ($('Parse JSON Gemini').item.json.need_clarification ? \"\\n\\n\" + $('Parse JSON Gemini').item.json.follow_up_question : \"\") }}",
+        "additionalFields": {
+          "appendAttribution": true,
+          "disable_notification": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        288,
+        976
+      ],
+      "id": "b5fe7897-a50b-4d90-a5ba-1958ec76bb4c",
+      "name": "Send Message",
+      "webhookId": "2e7f7536-4e83-4e7a-964e-862f432f9809",
+      "credentials": {
+        "telegramApi": {
+          "id": "8lO6zOXN4OwA5ARp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $json.output || '';\n\nreturn {\n  chat_id: $node[\"Build Prompt\"].json.chat_id,\n  user_name: $node[\"Build Prompt\"].json.user_name,\n  message_id: $node[\"Build Prompt\"].json.message_id,\n  reply_text: raw,\n  need_clarification: false,\n  follow_up_question: \"\",\n  raw_model_text: raw\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -128,
+        976
+      ],
+      "id": "62ff283a-31b1-4972-a0d2-f0d18620a944",
+      "name": "Parse JSON Gemini"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://hzwumjobxifoeikytpbp.supabase.co/rest/v1/chat_logs?message_id=eq.{{ $json.message_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6d3Vtam9ieGlmb2Vpa3l0cGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Njc0NjIzMiwiZXhwIjoyMDgyMzIyMjMyfQ.4vOMucDJUBl58FQtfiDWtcxFHPERLP3Vo5-oI8PvgxM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6d3Vtam9ieGlmb2Vpa3l0cGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Njc0NjIzMiwiZXhwIjoyMDgyMzIyMjMyfQ.4vOMucDJUBl58FQtfiDWtcxFHPERLP3Vo5-oI8PvgxM"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "ai_reply",
+              "value": "={{ $json.reply_text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        80,
+        976
+      ],
+      "id": "634375ee-8989-49ac-ae3d-059ae0bb0bbb",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "=https://hzwumjobxifoeikytpbp.supabase.co/rest/v1/chat_logs?chat_id=eq.{{ $json.chat_id }}&order=created_at.desc&limit=10",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6d3Vtam9ieGlmb2Vpa3l0cGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Njc0NjIzMiwiZXhwIjoyMDgyMzIyMjMyfQ.4vOMucDJUBl58FQtfiDWtcxFHPERLP3Vo5-oI8PvgxM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6d3Vtam9ieGlmb2Vpa3l0cGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Njc0NjIzMiwiZXhwIjoyMDgyMzIyMjMyfQ.4vOMucDJUBl58FQtfiDWtcxFHPERLP3Vo5-oI8PvgxM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1440,
+        1312
+      ],
+      "id": "fbac2db0-bd5b-4179-a789-07dcec56799d",
+      "name": "Get Chat History ",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        1216
+      ],
+      "id": "8041ca05-9031-4cbc-840d-afc8b81f5ace",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "q0RWrMqPjqZ39X8v",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hzwumjobxifoeikytpbp.supabase.co/rest/v1/chat_logs?on_conflict=chat_id,message_id",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6d3Vtam9ieGlmb2Vpa3l0cGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Njc0NjIzMiwiZXhwIjoyMDgyMzIyMjMyfQ.4vOMucDJUBl58FQtfiDWtcxFHPERLP3Vo5-oI8PvgxM"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh6d3Vtam9ieGlmb2Vpa3l0cGJwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2Njc0NjIzMiwiZXhwIjoyMDgyMzIyMjMyfQ.4vOMucDJUBl58FQtfiDWtcxFHPERLP3Vo5-oI8PvgxM"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "platform",
+              "value": "telegram"
+            },
+            {
+              "name": "direction",
+              "value": "in"
+            },
+            {
+              "name": "chat_id",
+              "value": "={{$json.chat_id}}"
+            },
+            {
+              "name": "user_name",
+              "value": "={{$json.user_name}}"
+            },
+            {
+              "name": "message_id",
+              "value": "={{$json.message_id}}"
+            },
+            {
+              "name": "message_text",
+              "value": "={{$json.text_clean || $json.text}}"
+            },
+            {
+              "name": "=intent",
+              "value": "={{$json.intent || 'other'}}"
+            },
+            {
+              "name": "raw",
+              "value": "={{$json}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1072,
+        960
+      ],
+      "id": "f38faafc-1fbf-4f37-a150-585dd357362b",
+      "name": "Save Message"
+    },
+    {
+      "parameters": {
+        "jsCode": "const intent = $json.intent || 'fallback';\nconst chat_id = $json.chat_id;\n\n// Lấy chat history từ Supabase\nlet chatHistory = [];\ntry {\n  const response = await this.helpers.httpRequest({\n    method: 'GET',\n    url: `https://hzwumjobxifoeikytpbp.supabase.co/rest/v1/chat_logs?chat_id=eq.${chat_id}&order=created_at.desc&limit=10`,\n    headers: {\n      'apikey': 'YOUR_SUPABASE_KEY',  // Thay bằng API key của bạn\n      'Authorization': 'Bearer YOUR_SUPABASE_KEY'\n    }\n  });\n  chatHistory = response || [];\n} catch (e) {\n  chatHistory = [];\n}\n\n// Format history\nconst historyText = chatHistory.length > 0 \n  ? \"\\n\\n=== LỊCH SỬ HỘI THOẠI ===\\n\" + chatHistory.slice(0, 5).reverse().map(h => \n      `User: ${h.message_text || h.raw?.text || ''}\\nBot: ${h.ai_reply || ''}`\n    ).join('\\n---\\n')\n  : '';\n\n// Company data\nconst companyInfo = `\n=== THÔNG TIN CÔNG TY ===\nTên: VKU TOP 1 MIỀN TRUNG\nLĩnh vực: N8N, AI Automation, Chatbot Development\nĐịa chỉ: Đà Nẵng, Việt Nam\nWebsite: n8n.io\nEmail HR: hr@thaibabau.vku.com\n`;\n\nconst jobList = `\n=== VỊ TRÍ ĐANG TUYỂN ===\n1. N8N Automation Developer (Junior) - 12-18 triệu - 2 người\n2. N8N Automation Developer (Senior) - 25-40 triệu - 1 người\n3. AI Chatbot Developer (Mid) - 18-28 triệu - 2 người\n4. Project Manager (Mid/Senior) - 30-45 triệu - 1 người\n5. Business Analyst (Junior/Mid) - 15-25 triệu - 1 người\n`;\n\nconst jobRequirements = `\n=== YÊU CẦU TỪNG VỊ TRÍ ===\nN8N Developer Junior: n8n cơ bản, JavaScript/Python, REST API, JSON.\nN8N Developer Senior: 2+ năm n8n, JavaScript/TypeScript, tích hợp AI.\nAI Chatbot Developer: Kinh nghiệm chatbot, LLM, prompt engineering.\nProject Manager: 2+ năm PM tech, Agile/Scrum.\nBusiness Analyst: Phân tích yêu cầu, viết tài liệu kỹ thuật.\n`;\n\nconst process = `\n=== QUY TRÌNH TUYỂN DỤNG ===\nBước 1: Nộp CV (PDF) qua email hoặc Telegram\nBước 2: HR review CV (2-3 ngày)\nBước 3: Test online (1-2 ngày)\nBước 4: Phỏng vấn kỹ thuật 45-60 phút\nBước 5: Phỏng vấn HR 30 phút\nBước 6: Gửi offer (3-5 ngày sau PV)\n`;\n\nconst salary = `\n=== THÔNG TIN LƯƠNG & PHÚC LỢI ===\n- N8N Developer Junior: 12-18 triệu/tháng\n- N8N Developer Senior: 25-40 triệu/tháng\n- AI Chatbot Developer: 18-28 triệu/tháng\n- Project Manager: 30-45 triệu/tháng\n- Business Analyst: 15-25 triệu/tháng\n- Lương tháng 13, review 2 lần/năm\n- Bảo hiểm sức khỏe, hybrid work\n- Budget học tập 5 triệu/năm\n`;\n\nconst applyGuide = `\n=== CÁCH ỨNG TUYỂN ===\nTelegram: Gửi CV (PDF) trực tiếp qua bot\nEmail: hr@thaibabau.vku.com\nCần kèm: CV (PDF), vị trí, email, SĐT.\n`;\n\n// Build context based on intent\nconst contexts = {\n  greeting: `Bạn là HR chatbot của VKU TOP 1 MIỀN TRUNG. Chào thân thiện, giới thiệu ngắn và hỏi cần hỗ trợ gì.\n${companyInfo}${historyText}`,\n  \n  job: `Bạn là HR chatbot. Trả lời chi tiết về vị trí tuyển dụng dựa trên data sau:\n${companyInfo}${jobList}${jobRequirements}${historyText}`,\n  \n  process: `Bạn là HR chatbot. Trả lời về quy trình tuyển dụng:\n${companyInfo}${process}${historyText}`,\n  \n  timeline: `Bạn là HR chatbot. Trả lời về timeline tuyển dụng:\n${companyInfo}${process}${historyText}`,\n  \n  salary: `Bạn là HR chatbot. Trả lời về lương và phúc lợi:\n${companyInfo}${salary}${historyText}`,\n  \n  apply: `Bạn là HR chatbot. Hướng dẫn cách ứng tuyển:\n${companyInfo}${applyGuide}${jobList}${historyText}`,\n  \n  upload_cv: `Bạn là HR chatbot. Hướng dẫn upload CV:\n${companyInfo}${applyGuide}${historyText}`,\n  \n  fallback: `Bạn là HR chatbot. Không hiểu thì hỏi lại ngắn gọn + gợi ý: job, salary, process, timeline, apply.\n${companyInfo}${jobList}${historyText}`\n};\n\nconst prompt_context = contexts[intent] || contexts.fallback;\nconst user_text = $json.text_clean || $json.raw?.text || '';\n\nreturn {\n  ...$json,\n  intent,\n  user_text,\n  prompt_context,\n  chat_history: chatHistory\n};\n```\n\n**Bước 4:** Thay `YOUR_SUPABASE_KEY` bằng API key thực của bạn\n\n---\n\n### Flow cuối cùng:\n```\nTelegram → Extract → Intent Router → Save Message → Switch → Build Prompt With History → AI Agent → Parse → Update Reply → Send"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -752,
+        1408
+      ],
+      "id": "d3a192df-6748-48ee-988f-7bdf0e126e51",
+      "name": "Build Prompt Chat History"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8dbe2f6a-8270-4abc-aafd-65deb7d8f63b",
+              "leftValue": "={{ $json.message.document !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2112,
+        1216
+      ],
+      "id": "45f8a031-2261-4835-840c-3207a83537a3",
+      "name": "Check File"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -1952,
+        752
+      ],
+      "id": "10c4a5db-06bb-4d40-b16e-84f5cb6bdef0",
+      "name": "Get a file",
+      "webhookId": "82a3998d-4ee0-4510-8f87-fbbe5697483a",
+      "credentials": {
+        "telegramApi": {
+          "id": "8lO6zOXN4OwA5ARp",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1712,
+        752
+      ],
+      "id": "546caff1-b850-48b1-bc24-e8b54fb412be",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $json.output || '';\n\nlet result;\ntry {\n  // Tìm JSON trong output\n  const jsonMatch = output.match(/\\{[\\s\\S]*\\}/);\n  result = JSON.parse(jsonMatch[0]);\n} catch (e) {\n  result = {\n    candidate_name: \"Unknown\",\n    email: \"\",\n    phone: \"\",\n    years_experience: 0,\n    ielts_score: null,\n    programming_languages: [],\n    programming_count: 0,\n    is_qualified: false,\n    feedback: \"Không thể đọc CV\"\n  };\n}\n\nreturn {\n  ...result,\n  original_file: $('Check File').item.json.message.document.file_name,\n  telegram_user: $('Check File').item.json.message.from.username\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1104,
+        752
+      ],
+      "id": "d1fc714c-9bed-49c3-930e-e5964878532e",
+      "name": "Parse CV Result"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -1456,
+        928
+      ],
+      "id": "17f9420a-36e3-4ed0-9464-17c08c192ae5",
+      "name": "Groq Chat ",
+      "credentials": {
+        "groqApi": {
+          "id": "q0RWrMqPjqZ39X8v",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Phân tích CV sau và trả về JSON:\n\n{{ $json.text }}",
+        "options": {
+          "systemMessage": "Bạn là HR chuyên đánh giá CV. Phân tích CV và trả về JSON với format CHÍNH XÁC như sau:\n\n{\n  \"candidate_name\": \"Tên ứng viên\",\n  \"email\": \"Email ứng viên\",\n  \"phone\": \"SĐT\",\n  \"years_experience\": 0,\n  \"ielts_score\": null,\n  \"programming_languages\": [],\n  \"programming_count\": 0,\n  \"is_qualified\": false,\n  \"feedback\": \"Nhận xét\"\n}\n\nTIÊU CHÍ ĐẠT YÊU CẦU:\n- Kinh nghiệm >= 1 năm\n- IELTS >= 7.0\n- Ngôn ngữ lập trình >= 3\n\nNếu CV không ghi rõ thông tin nào thì:\n- years_experience = 0\n- ielts_score = null\n- programming_languages = []\n\nis_qualified = true CHỈ KHI đạt CẢ 3 tiêu chí trên.\n\nCHỈ TRẢ VỀ JSON, KHÔNG GIẢI THÍCH THÊM."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1456,
+        752
+      ],
+      "id": "37d60429-cf96-4a53-aef9-2011ab7261a9",
+      "name": "AI Agent PDF"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.user_text }}",
+        "options": {
+          "systemMessage": "={{ $json.prompt_context }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -416,
+        976
+      ],
+      "id": "8c64d6e9-70c9-4f53-9785-0a1fe40763f3",
+      "name": "AI Agent Message"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1070d282-1f12-47c9-ae5e-3b256197c252",
+              "leftValue": "={{ $json.is_qualified }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -896,
+        752
+      ],
+      "id": "3bb14415-0ec1-406b-9488-2ee6d561afe3",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Check File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Telegram": {
+      "main": [
+        [
+          {
+            "node": "Intent Router",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Chat History ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intent Router": {
+      "main": [
+        [
+          {
+            "node": "Save Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "AI Agent Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON Gemini": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent Message",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Message": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check File": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "AI Agent PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent PDF",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent PDF": {
+      "main": [
+        [
+          {
+            "node": "Parse CV Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent Message": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON Gemini",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse CV Result": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d4d28f8-ec04-46ad-a86b-ddc72ee5dde2",
+  "meta": {
+    "instanceId": "781860ce40468cabddb429e5a407cee90642b4e2a9a182b876f99f8b14aa2336"
+  },
+  "id": "jBVin7wb1WjkOSll",
+  "tags": []
+}

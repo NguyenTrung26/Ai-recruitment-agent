@@ -262,8 +262,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -832,
-        912
+        -848,
+        1072
       ],
       "id": "c6f1acd9-54a4-4092-8bac-85e776a74d9e",
       "name": "Switch"
@@ -287,7 +287,7 @@
             {
               "id": "8559501a-3b09-4c6f-89e2-a76fcfa3098d",
               "name": "prompt_context",
-              "value": "={{ (() => {\n  const intent = $json.intent || 'fallback';\n\n  const companyInfo = `\n=== THÔNG TIN CÔNG TY ===\nTên: VKU TOP 1 MIỀN TRUNG\nLĩnh vực: N8N, AI Automation, Chatbot Development\nĐịa chỉ: Đà Nẵng, Việt Nam\nWebsite: n8n.io\nEmail HR: hr@thaibabau.vku.com\n`;\n\n  const jobList = `\n=== VỊ TRÍ ĐANG TUYỂN ===\n1. N8N Automation Developer (Junior) - 12-18 triệu - 2 người\n2. N8N Automation Developer (Senior) - 25-40 triệu - 1 người\n3. AI Chatbot Developer (Mid) - 18-28 triệu - 2 người\n4. Project Manager (Mid/Senior) - 30-45 triệu - 1 người\n5. Business Analyst (Junior/Mid) - 15-25 triệu - 1 người\n`;\n\n  const jobRequirements = `\n=== YÊU CẦU TỪNG VỊ TRÍ ===\nN8N Developer Junior: n8n cơ bản, JavaScript/Python, REST API, JSON, Tiếng Anh đọc hiểu.\nN8N Developer Senior: 2+ năm n8n, JavaScript/TypeScript, tích hợp AI (OpenAI/Gemini/Claude), PostgreSQL/Supabase.\nAI Chatbot Developer: Kinh nghiệm chatbot Telegram/Messenger, LLM, prompt engineering, Python/Node.js.\nProject Manager: 2+ năm PM tech, Agile/Scrum, tiếng Anh giao tiếp.\nBusiness Analyst: Phân tích yêu cầu, viết tài liệu kỹ thuật, hiểu automation workflow.\n`;\n\n  const process = `\n=== QUY TRÌNH TUYỂN DỤNG ===\nBước 1: Nộp CV (PDF) qua email hoặc Telegram bot\nBước 2: HR review CV (2-3 ngày)\nBước 3: Test online nếu có (1-2 ngày)\nBước 4: Phỏng vấn kỹ thuật 45-60 phút\nBước 5: Phỏng vấn HR 30 phút\nBước 6: Gửi offer (3-5 ngày sau PV)\nTổng: 1-2 tuần từ nộp CV đến offer.\n`;\n\n  const salary = `\n=== THÔNG TIN LƯƠNG ===\n- N8N Developer Junior: 12-18 triệu/tháng\n- N8N Developer Senior: 25-40 triệu/tháng\n- AI Chatbot Developer: 18-28 triệu/tháng\n- Project Manager: 30-45 triệu/tháng\n- Business Analyst: 15-25 triệu/tháng\n`;\n\n  const benefits = `\n=== PHÚC LỢI ===\n- Lương tháng 13 + thưởng hiệu suất\n- Review lương 2 lần/năm\n- Bảo hiểm sức khỏe\n- Hybrid: 3 ngày office, 2 ngày remote\n- Budget học tập 5 triệu/năm\n`;\n\n  const applyGuide = `\n=== CÁCH ỨNG TUYỂN ===\nQua Telegram: Gửi CV (PDF) trực tiếp\nQua Email: hr@thaibabau.vku.com\nCần kèm: CV (PDF), vị trí, email, SĐT.\n`;\n\n  const contexts = {\n    greeting: `Bạn là HR chatbot của VKU TOP 1 MIỀN TRUNG. Chào thân thiện và hỏi cần hỗ trợ gì.\n${companyInfo}`,\n    \n    job: `Bạn là HR chatbot. Trả lời về vị trí tuyển dụng.\n${companyInfo}${jobList}${jobRequirements}`,\n    \n    process: `Bạn là HR chatbot. Trả lời về quy trình tuyển dụng.\n${companyInfo}${process}`,\n    \n    timeline: `Bạn là HR chatbot. Trả lời về timeline.\n${companyInfo}${process}`,\n    \n    salary: `Bạn là HR chatbot. Trả lời về lương và phúc lợi.\n${companyInfo}${salary}${benefits}`,\n    \n    apply: `Bạn là HR chatbot. Hướng dẫn cách ứng tuyển.\n${companyInfo}${applyGuide}${jobList}`,\n    \n    upload_cv: `Bạn là HR chatbot. Hướng dẫn upload CV qua Telegram.\n${companyInfo}${applyGuide}`,\n    \n    fallback: `Bạn là HR chatbot. Hỏi lại ngắn gọn + gợi ý menu: job, salary, process, timeline, apply.\n${companyInfo}${jobList}`\n  };\n\n  return contexts[intent] || contexts.fallback;\n})() }}\n```\n\n---\n\n### Bước 3: Xóa node Get Chat History (tạm thời)\n\nXóa hoặc disable node này để workflow chạy được trước.\n\n---\n\n### Tóm tắt flow đơn giản:\n```\nTelegram → Extract → Intent Router → HTTP Request1 → Switch → Build Prompt → AI Agent → Parse → PATCH → Send",
+              "value": "={{ (() => {\n  const intent = $json.intent || 'fallback';\n\n  const companyInfo = `\n=== THÔNG TIN CÔNG TY ===\nTên: VKU TOP 1 MIỀN TRUNG\nLĩnh vực: N8N, AI Automation, Chatbot Development\nĐịa chỉ: Đà Nẵng, Việt Nam\nWebsite: n8n.io\nEmail HR: ocdbau@gmail.com\n`;\n\n  const jobList = `\n=== VỊ TRÍ ĐANG TUYỂN ===\n1. N8N Automation Developer (Junior) - 12-18 triệu - 2 người\n2. N8N Automation Developer (Senior) - 25-40 triệu - 1 người\n3. AI Chatbot Developer (Mid) - 18-28 triệu - 2 người\n4. Project Manager (Mid/Senior) - 30-45 triệu - 1 người\n5. Business Analyst (Junior/Mid) - 15-25 triệu - 1 người\n`;\n\n  const jobRequirements = `\n=== YÊU CẦU TỪNG VỊ TRÍ ===\nN8N Developer Junior: n8n cơ bản, JavaScript/Python, REST API, JSON, Tiếng Anh đọc hiểu.\nN8N Developer Senior: 2+ năm n8n, JavaScript/TypeScript, tích hợp AI (OpenAI/Gemini/Claude), PostgreSQL/Supabase.\nAI Chatbot Developer: Kinh nghiệm chatbot Telegram/Messenger, LLM, prompt engineering, Python/Node.js.\nProject Manager: 2+ năm PM tech, Agile/Scrum, tiếng Anh giao tiếp.\nBusiness Analyst: Phân tích yêu cầu, viết tài liệu kỹ thuật, hiểu automation workflow.\n`;\n\n  const process = `\n=== QUY TRÌNH TUYỂN DỤNG ===\nBước 1: Nộp CV (PDF) qua email hoặc Telegram bot\nBước 2: HR review CV (2-3 ngày)\nBước 3: Test online nếu có (1-2 ngày)\nBước 4: Phỏng vấn kỹ thuật 45-60 phút\nBước 5: Phỏng vấn HR 30 phút\nBước 6: Gửi offer (3-5 ngày sau PV)\nTổng: 1-2 tuần từ nộp CV đến offer.\n`;\n\n  const salary = `\n=== THÔNG TIN LƯƠNG ===\n- N8N Developer Junior: 12-18 triệu/tháng\n- N8N Developer Senior: 25-40 triệu/tháng\n- AI Chatbot Developer: 18-28 triệu/tháng\n- Project Manager: 30-45 triệu/tháng\n- Business Analyst: 15-25 triệu/tháng\n`;\n\n  const benefits = `\n=== PHÚC LỢI ===\n- Lương tháng 13 + thưởng hiệu suất\n- Review lương 2 lần/năm\n- Bảo hiểm sức khỏe\n- Hybrid: 3 ngày office, 2 ngày remote\n- Budget học tập 5 triệu/năm\n`;\n\n  const applyGuide = `\n=== CÁCH ỨNG TUYỂN ===\nQua Telegram: Gửi CV (PDF) trực tiếp\nQua Email: ocdbau@gmail.com\nCần kèm: CV (PDF), vị trí, email, SĐT.\n`;\n\n  const contexts = {\n    greeting: `Bạn là HR chatbot của VKU TOP 1 MIỀN TRUNG. Chào thân thiện và hỏi cần hỗ trợ gì.\n${companyInfo}`,\n    \n    job: `Bạn là HR chatbot. Trả lời về vị trí tuyển dụng.\n${companyInfo}${jobList}${jobRequirements}`,\n    \n    process: `Bạn là HR chatbot. Trả lời về quy trình tuyển dụng.\n${companyInfo}${process}`,\n    \n    timeline: `Bạn là HR chatbot. Trả lời về timeline.\n${companyInfo}${process}`,\n    \n    salary: `Bạn là HR chatbot. Trả lời về lương và phúc lợi.\n${companyInfo}${salary}${benefits}`,\n    \n    apply: `Bạn là HR chatbot. Hướng dẫn cách ứng tuyển.\n${companyInfo}${applyGuide}${jobList}`,\n    \n    upload_cv: `Bạn là HR chatbot. Hướng dẫn upload CV qua Telegram.\n${companyInfo}${applyGuide}`,\n    \n    fallback: `Bạn là HR chatbot. Hỏi lại ngắn gọn + gợi ý menu: job, salary, process, timeline, apply.\n${companyInfo}${jobList}`\n  };\n\n  return contexts[intent] || contexts.fallback;\n})() }}\n```\n\n---\n\n### Bước 3: Xóa node Get Chat History (tạm thời)\n\nXóa hoặc disable node này để workflow chạy được trước.\n\n---\n\n### Tóm tắt flow đơn giản:\n```\nTelegram → Extract → Intent Router → HTTP Request1 → Switch → Build Prompt → AI Agent → Parse → PATCH → Send",
               "type": "string"
             }
           ]
@@ -502,8 +502,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
       "position": [
-        -1072,
-        960
+        -1088,
+        1152
       ],
       "id": "f38faafc-1fbf-4f37-a150-585dd357362b",
       "name": "Save Message"
@@ -550,8 +550,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -2112,
-        1216
+        -2144,
+        1152
       ],
       "id": "45f8a031-2261-4835-840c-3207a83537a3",
       "name": "Check File"
@@ -566,7 +566,7 @@
       "typeVersion": 1.2,
       "position": [
         -1952,
-        752
+        784
       ],
       "id": "10c4a5db-06bb-4d40-b16e-84f5cb6bdef0",
       "name": "Get a file",
@@ -586,8 +586,8 @@
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
       "position": [
-        -1712,
-        752
+        -1648,
+        784
       ],
       "id": "546caff1-b850-48b1-bc24-e8b54fb412be",
       "name": "Extract from File"
@@ -599,8 +599,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -1104,
-        752
+        -1088,
+        784
       ],
       "id": "d1fc714c-9bed-49c3-930e-e5964878532e",
       "name": "Parse CV Result"
@@ -636,8 +636,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3,
       "position": [
-        -1456,
-        752
+        -1440,
+        784
       ],
       "id": "37d60429-cf96-4a53-aef9-2011ab7261a9",
       "name": "AI Agent PDF"
@@ -658,6 +658,60 @@
       ],
       "id": "8c64d6e9-70c9-4f53-9785-0a1fe40763f3",
       "name": "AI Agent Message"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "[VKU TOP 1 MIỀN TRUNG] Phản hồi CV của bạn",
+        "emailType": "text",
+        "message": "=Xin chào {{ $json.candidate_name }},\nCảm ơn bạn đã quan tâm đến vị trí tuyển dụng tại VKU TOP 1 MIỀN TRUNG.  \nSau khi xem xét CV của bạn, chúng tôi nhận thấy hồ sơ chưa đáp ứng đủ yêu cầu:\nYêu cầu tối thiểu:\n- Kinh nghiệm: >= 1 năm\n- IELTS: >= 7.0 - Ngôn ngữ lập trình: >= 3\nNhận xét:{{ $json.feedback }}  \nGợi ý:Vui lòng cập nhật CV với đầy đủ thông tin về kinh nghiệm, chứng chỉ IELTS và kỹ năng lập trình, sau đó gửi lại cho chúng tôi.\nChúc bạn thành công!  \n--- VKU TOP 1 MIỀN TRUNG  Đà Nẵng, Việt Nam  \nHR: bauocd@gmail.com ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        800
+      ],
+      "id": "71232db2-e775-4287-8a59-0b0dd6bd02e4",
+      "name": "Email Reject to Candidate",
+      "webhookId": "1528477e-fe8a-40ec-8685-8ccf121feb01",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "=ocdbau@gmail.com",
+        "subject": "[CV ĐẠT YÊU CẦU] {{ $json.candidate_name }} - {{ $json.original_file }}",
+        "emailType": "text",
+        "message": "=CV MỚI ĐẠT YÊU CẦU!\n1. Thông tin ứng viên:\n- Họ tên: {{ $json.candidate_name }}\n- Email: {{ $json.email }} \n- SĐT: {{ $json.phone }} \n- Telegram: @{{ $json.telegram_user }}  \n2. Đánh giá:\n- Kinh nghiệm: {{ $json.years_experience }} năm\n- IELTS: {{ $json.ielts_score || 'N/A' }}\n- Ngôn ngữ lập trình: {{ $json.programming_count }}. {{ $json.programming_languages.join(', ') }}\nNhận xét: {{ $json.feedback }} \nFile CV: {{ $json.original_file }} \n--- Vui lòng liên hệ ứng viên để sắp xếp phỏng vấn.",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -192,
+        560
+      ],
+      "id": "db1a36d5-5ec2-4e63-ba91-4e385cac1630",
+      "name": "Email CV to HR",
+      "webhookId": "bab125f8-f81c-4522-ba7b-5ff5a59d0533",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
     },
     {
       "parameters": {
@@ -687,11 +741,26 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        -896,
-        752
+        -832,
+        784
       ],
       "id": "3bb14415-0ec1-406b-9488-2ee6d561afe3",
-      "name": "If"
+      "name": "Check Qualify CV Candidate"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -560,
+        576
+      ],
+      "id": "fa71804c-5816-4adc-ba4b-2625a31b16a7",
+      "name": "Merge"
     }
   ],
   "pinData": {},
@@ -867,6 +936,11 @@
             "node": "Extract from File",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -919,7 +993,36 @@
       "main": [
         [
           {
-            "node": "If",
+            "node": "Check Qualify CV Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Qualify CV Candidate": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Email Reject to Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Email CV to HR",
             "type": "main",
             "index": 0
           }
@@ -931,8 +1034,9 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8d4d28f8-ec04-46ad-a86b-ddc72ee5dde2",
+  "versionId": "4f29d4f5-81b1-427e-8f17-de0c3e121a45",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "781860ce40468cabddb429e5a407cee90642b4e2a9a182b876f99f8b14aa2336"
   },
   "id": "jBVin7wb1WjkOSll",

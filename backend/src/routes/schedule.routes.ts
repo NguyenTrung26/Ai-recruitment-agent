@@ -72,12 +72,12 @@ router.get("/", async (req: Request, res: Response) => {
 
     const mapped = data.map((item: any) => ({
       id: item.id,
-      title: item.job_title,
-      content: item.job_desc,
+      job_title: item.job_title,
+      job_desc: item.job_desc,
       scheduled_time: item.scheduled_time,
       status: item.status,
       apply_link: item.apply_link,
-      created_at: item.posted_time,
+      posted_time: item.posted_time,
     }));
 
     logger.info({ count: mapped.length }, "Schedules fetched");

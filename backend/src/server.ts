@@ -96,6 +96,8 @@ app.use("/api/cv", cvRoutes);
 app.use(errorHandler);
 
 app.listen(config.port, () => {
-  console.log(`Server is running on http://localhost:${config.port}`);
+  console.log(
+    `Server is running on https://ai-recruitment-agent-ocg1.onrender.com`
+  );
   console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
 });

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tạo lịch tuyển dụng</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 5px;
+    }
+
+    input, textarea {
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
+    }
+
+    button {
+      background: #667eea;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #5563d6;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #666;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>📝 Tạo lịch tuyển dụng</h2>
+
+    <div id="success" class="success"></div>
+    <div id="error" class="error"></div>
+
+    <form id="jobForm">
+      <div>
+        <label>Vị trí tuyển</label>
+        <input name="job_title" placeholder="VD: Backend Developer" required />
+      </div>
+
+      <div>
+        <label>Mô tả công việc</label>
+        <textarea name="job_desc" placeholder="Mô tả ngắn gọn công việc..."></textarea>
+      </div>
+
+      <div>
+        <label>Link ứng tuyển</label>
+        <input name="apply_link" placeholder="https://..." />
+      </div>
+
+      <div>
+        <label>Thời gian đăng</label>
+        <input type="datetime-local" name="scheduled_time" required />
+      </div>
+
+      <button type="submit">🚀 Tạo lịch</button>
+    </form>
+
+    <div class="note">
+      Dữ liệu sẽ được gửi trực tiếp tới n8n & Supabase
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("jobForm");
+    const successBox = document.getElementById("success");
+    const errorBox = document.getElementById("error");
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      successBox.style.display = "none";
+      errorBox.style.display = "none";
+
+      const f = e.target;
+
+      const payload = {
+        job_title: f.job_title.value,
+        job_desc: f.job_desc.value,
+        apply_link: f.apply_link.value,
+        scheduled_time: f.scheduled_time.value,
+        status: "todo"
+      };
+
+      try {
+        const res = await fetch(
+          "https://n8n-group5.len-handmade.top/webhook/create-job",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok || data.success === false) {
+          throw new Error(data.message || "Tạo lịch thất bại");
+        }
+
+        successBox.innerText = "✅ " + data.message;
+        successBox.style.display = "block";
+        form.reset();
+
+      } catch (err) {
+        errorBox.innerText = "❌ " + err.message;
+        errorBox.style.display = "block";
+      }
+    };
+  </script>
+</body>
+</html>

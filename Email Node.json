@@ -1,0 +1,2088 @@
+{
+  "name": "Email Node",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "apply-cv",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -2448,
+        416
+      ],
+      "id": "1a67750b-2645-4263-9088-d98ce1f59532",
+      "name": "Webhook",
+      "webhookId": "42f9c1a7-a63a-4b22-bfd9-47030fff9d75"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Developer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "2cf13ca8-df70-4176-87e8-484bbfef219a"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b6ae8846-8a86-4421-9741-f17b6b1db6fd",
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Designer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ed40199c-99f7-4114-abb5-ee2dbfe938c2",
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        528
+      ],
+      "id": "0e9f8149-6275-4c02-bced-2d64d1b89050",
+      "name": "Mid"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Developer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "75211b05-bd2e-4a19-9ebc-ef2738b54301"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "3fc97445-c008-4b29-9a80-2122fa345c25",
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Designer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "94b29a4d-ace5-4916-a411-bf2a6ea6657a",
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -624,
+        32
+      ],
+      "id": "84f39c12-cb09-420e-b4bd-5edfc2de6b14",
+      "name": "Junior"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Developer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "3291c66f-e27b-4fbc-9b40-ccde88580dff"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c5312668-237a-457b-bcc7-f17de6d481dd",
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Designer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b938244c-a9c6-4511-829e-5ba2164b0309",
+                    "leftValue": "={{$json.final_role}}",
+                    "rightValue": "Other",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        992
+      ],
+      "id": "99eefd17-b854-49af-a4f8-0b9f0dd835ef",
+      "name": "Senior"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.final_level}}",
+                    "rightValue": "Junior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "39d785da-43f0-4287-8202-38f0c5a8a9a4"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "fdbcc800-c3e4-4f87-b842-f3df485bb3da",
+                    "leftValue": "={{$json.final_level}}",
+                    "rightValue": "Mid",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b01f137a-24c3-4f51-8020-40bdacbe3e8f",
+                    "leftValue": "={{$json.final_level}}",
+                    "rightValue": "Senior",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -784,
+        432
+      ],
+      "id": "34d8e80f-8b14-43f7-940f-b0a25e9dd632",
+      "name": "Level"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const clean = v => typeof v === 'string' ? v.trim() : v;\n\nconst cv = clean($json.cv_text);\nconst roleRaw = clean($json.role_raw);\n\n// detect years\nlet years = 0;\nconst match = cv.match(/(\\d+)\\s*(year|years|năm)/i);\nif (match) years = parseInt(match[1], 10);\n\n// classify level\nlet level = \"Junior\";\nif (years >= 3) level = \"Mid\";\nif (years >= 6) level = \"Senior\";\n\n// classify role\nlet role = \"Other\";\nconst r = roleRaw.toLowerCase();\nif (r.includes(\"dev\")) role = \"Developer\";\nelse if (r.includes(\"design\")) role = \"Designer\";\n\nreturn {\n  ...$json,\n  years,\n  level,\n  role,\n  summary: cv.length > 120 ? cv.slice(0,120) + \"...\" : cv\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2032,
+        432
+      ],
+      "id": "d48f0ace-a603-4350-ae8e-c30c9c51c7f3",
+      "name": "Function"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2ba7f571-ce8b-4922-8421-e5d25b0178aa",
+              "name": "candidate_name",
+              "value": "={{$json.body.name.trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "a1ecc149-a998-462f-af41-09dd6e2afa13",
+              "name": "candidate_email",
+              "value": "={{$json.body.email.trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "4796a1b4-ea3d-454f-ae20-f49c6cd7ada4",
+              "name": "cv_text",
+              "value": "={{$json.body.cv_text.trim()}}",
+              "type": "string"
+            },
+            {
+              "id": "2979fc7d-7837-4ce7-922b-44dcd5ccfd0e",
+              "name": "role_raw",
+              "value": "={{$json.body.role.trim()}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -2240,
+        432
+      ],
+      "id": "dc40f855-02f8-4786-bb37-de5e31e287df",
+      "name": "Candidate_Data"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1310695220,
+          "mode": "list",
+          "cachedResultName": "Junior_Designer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=1310695220"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -288,
+        32
+      ],
+      "id": "e1ad4ae8-c0a2-4e33-9762-ba4f37704921",
+      "name": "Junior Desinger",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 817025827,
+          "mode": "list",
+          "cachedResultName": "Junior_Developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=817025827"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -288,
+        -128
+      ],
+      "id": "5998dba6-e5c7-4739-af56-2fa711748ad7",
+      "name": "Junior Dev",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 277639703,
+          "mode": "list",
+          "cachedResultName": "Junior_Other",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=277639703"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -288,
+        224
+      ],
+      "id": "7219b939-bc65-49d5-bfa2-3ef63ffec75f",
+      "name": "Junior Other",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 892101425,
+          "mode": "list",
+          "cachedResultName": "Mid_Developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=892101425"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        416
+      ],
+      "id": "04b2b8ca-a7d9-42ae-9aec-f484583bb09c",
+      "name": "Mid dev",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1158631910,
+          "mode": "list",
+          "cachedResultName": "Mid_Designer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=1158631910"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        592
+      ],
+      "id": "4bb0ed6a-4f41-4cf6-8d43-7a0009acf5ce",
+      "name": "Mid Des",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 692638824,
+          "mode": "list",
+          "cachedResultName": "Mid_Other",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=692638824"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        768
+      ],
+      "id": "35195ad0-da24-4ce5-a4a6-36f1db6f8f83",
+      "name": "Mid Other",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2037634365,
+          "mode": "list",
+          "cachedResultName": "Senior_Developer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=2037634365"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        960
+      ],
+      "id": "25d85f8b-ca19-479f-9b13-9110c9382609",
+      "name": "Senior DEV",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1019918758,
+          "mode": "list",
+          "cachedResultName": "Senior_Designer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=1019918758"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        1104
+      ],
+      "id": "46eb0864-c402-416b-bba9-7a952c46a6ee",
+      "name": "Senior DES",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk",
+          "mode": "list",
+          "cachedResultName": "CV_Applicants",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1259266533,
+          "mode": "list",
+          "cachedResultName": "Senior_Other",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/15FXeBBCUay5PdOyMxVdNpspifFyUJ6FXCzxJzNhaXZk/edit#gid=1259266533"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "time": "={{$now}}",
+            "name": "={{$json.candidate_name}}",
+            "email": "={{$json.candidate_email}}",
+            "level": "={{$json.level}}",
+            "role": "={{$json.role}}",
+            "years": "={{$json.years}}",
+            "summary": "={{$json.summary}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "time",
+              "displayName": "time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "level",
+              "displayName": "level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "role",
+              "displayName": "role",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "years",
+              "displayName": "years",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -272,
+        1264
+      ],
+      "id": "3027671a-e63c-4814-af23-6d96323289b7",
+      "name": "Senior Other",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "eBnjYtA7b9ldhWfu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        960
+      ],
+      "id": "9802dee4-b613-4a58-9c45-da531ace0fcc",
+      "name": "Email Senior Developer",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Bạn là HR assistant. Chỉ trả về JSON thuần, không markdown, không giải thích.\n\nDữ liệu ứng viên:\n- name: {{$json.candidate_name}}\n- email: {{$json.candidate_email}}\n- role_input: {{$json.role_raw}}\n- cv_text:\n{{$json.cv_text}}\n\nHãy trả về đúng schema JSON:\n{\n  \"years_estimate\": number,\n  \"level\": \"Junior\" | \"Mid\" | \"Senior\",\n  \"role\": \"Developer\" | \"Designer\" | \"Other\",\n  \"top_skills\": string[],\n  \"strengths\": string[],\n  \"gaps\": string[],\n  \"score\": number,\n  \"one_line_summary\": string,\n  \"recommended_next_step\": string\n}\n\nQuy tắc:\n- level: Junior <3, Mid 3-5, Senior >=6 theo years_estimate.\n- score: 0-100.\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1744,
+        144
+      ],
+      "id": "d641dd67-4254-4bed-b7ea-cf0589952d43",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "9ph5osHRB6ggciCf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 1) Lấy text JSON mà Gemini trả về\nconst text = $json?.content?.parts?.[0]?.text ?? \"\";\n\n// 2) Helper: thử parse JSON, có xử lý trường hợp có \\n và text bị bọc ```json\nfunction safeJsonParse(s) {\n  if (!s) return null;\n\n  // bỏ ```json ... ``` nếu có\n  s = s.replace(/```json\\s*/gi, \"\").replace(/```/g, \"\").trim();\n\n  // nếu có ký tự thừa trước/sau JSON, cắt từ { ... }\n  const start = s.indexOf(\"{\");\n  const end = s.lastIndexOf(\"}\");\n  if (start !== -1 && end !== -1) s = s.slice(start, end + 1);\n\n  try {\n    return JSON.parse(s);\n  } catch (e) {\n    return null;\n  }\n}\n\nconst data = safeJsonParse(text);\n\n// 3) Nếu parse fail thì fallback (không làm chết flow)\nconst ai = data ?? {\n  years_estimate: $json.years ?? 0,\n  level: $json.level ?? \"Junior\",\n  role: $json.role ?? \"Other\",\n  top_skills: [],\n  strengths: [],\n  gaps: [],\n  score: 0,\n  one_line_summary: $json.summary ?? \"\",\n  recommended_next_step: \"\"\n};\n\n// 4) Merge vào item hiện tại để downstream dùng được\nreturn {\n  ...$json,\n  ai_years_estimate: ai.years_estimate,\n  ai_level: ai.level,\n  ai_role: ai.role,\n  ai_top_skills: ai.top_skills,\n  ai_strengths: ai.strengths,\n  ai_gaps: ai.gaps,\n  ai_score: ai.score,\n  ai_one_line_summary: ai.one_line_summary,\n  ai_recommended_next_step: ai.recommended_next_step,\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1424,
+        336
+      ],
+      "id": "abc6dcc9-9cab-4252-a2a7-84a3ab5bc63c",
+      "name": "Parse AI Json"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7f495d15-d618-4066-a290-9e733dbd1215",
+              "name": "final_level",
+              "value": "={{ $json.ai_level ?? $json.level }}",
+              "type": "string"
+            },
+            {
+              "id": "5e22dfdb-7885-4e90-bdf1-7e5980fb3fb2",
+              "name": "final_role",
+              "value": "={{ $json.ai_role ?? $json.role }}",
+              "type": "string"
+            },
+            {
+              "id": "c16cbcdf-604b-4ddc-9a2c-c151c1c687d7",
+              "name": "final_years",
+              "value": "={{ Number($json.ai_years_estimate ?? $json.years ?? 0) }}",
+              "type": "number"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1024,
+        416
+      ],
+      "id": "b487ec95-4f9a-4097-85e5-940f00c98f59",
+      "name": "Final inputs"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1232,
+        416
+      ],
+      "id": "d31c33bb-58ff-4097-8b96-a8133d45cae9",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        -144
+      ],
+      "id": "0aea3069-7bd4-48b9-85ec-a348b786a160",
+      "name": "Email Senior Developer1",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        592
+      ],
+      "id": "52cb4f2d-5d29-434e-8db0-f3d7d0fe5839",
+      "name": "Email Senior Developer2",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        416
+      ],
+      "id": "c78db696-eca9-48af-b901-d5ca517f745e",
+      "name": "Email Senior Developer3",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        208
+      ],
+      "id": "641ab203-b706-4fea-981a-35f26452eea5",
+      "name": "Email Senior Developer4",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        32
+      ],
+      "id": "48c0bbba-0703-428e-895a-98c2522c9611",
+      "name": "Email Senior Developer5",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -64,
+        768
+      ],
+      "id": "1233f710-2e6e-4248-9f03-12ee41fc1a4b",
+      "name": "Email Senior Developer6",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        1280
+      ],
+      "id": "b3cbafb4-b81c-40cd-9cb2-78e9325e011e",
+      "name": "Email Senior Developer7",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{$json.email}}",
+        "subject": "=[CV Đã Nhận] {{$json.role}} - {{$json.level}} | {{$json.name}}",
+        "emailType": "text",
+        "message": "=Chào {{$json.name}}, \nCảm ơn bạn đã ứng tuyển {{$json.role}} vị trí {{$json.level}}.\nChúng tôi đã nhận được cv của bạn và lưu vào hệ thống.  \nTóm tắt về bạn: {{$json.summary}} \nChúng tôi sẽ liên hệ với bạn sớm .  Best regards, HR Team !",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        1104
+      ],
+      "id": "d94f5440-b8a6-467f-a69a-3c0867d4e81b",
+      "name": "Email Senior Developer8",
+      "webhookId": "f28e7b1d-749e-4293-a0ab-7256ff320105",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3alEtQqBM1lpcXON",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-robotics-er-1.5-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-robotics-er-1.5-preview"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Bạn là trợ lý HR của công ty. Luôn trả lời bằng tiếng Việt, ngắn gọn, đúng trọng tâm, không bịa.\nNếu thiếu thông tin thì hỏi lại tối đa 2 câu.\nChỉ trả lời nội dung chat, không nhắc kỹ thuật workflow.\nTrả lời theo JSON thuần dạng:\n{\"reply_text\":\"...\",\"need_clarification\":true/false,\"follow_up_question\":\"...\"}\nChỉ được trả về JSON hợp lệ.\nKhông được dùng markdown, không được thêm ký tự ``` hoặc lời giải thích.\n\n",
+              "role": "model"
+            },
+            {
+              "content": "=Context:\n{{$json.prompt_context}}\n\nUser message:\n{{$json.user_text}}\n\nTrả lời trực tiếp cho user (plain text).\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -928,
+        1088
+      ],
+      "id": "ecdc4615-a402-4b0d-aa55-6d00d28eb348",
+      "name": "Gemini Answer",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4HYn7cdAIJhFIy9n",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Candidate_Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mid": {
+      "main": [
+        [
+          {
+            "node": "Mid dev",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mid Des",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mid Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Junior": {
+      "main": [
+        [
+          {
+            "node": "Junior Dev",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Junior Desinger",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Junior Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Senior": {
+      "main": [
+        [
+          {
+            "node": "Senior DEV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Senior DES",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Senior Other",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Level": {
+      "main": [
+        [
+          {
+            "node": "Junior",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mid",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Senior",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Candidate_Data": {
+      "main": [
+        [
+          {
+            "node": "Function",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Junior Desinger": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Junior Dev": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Junior Other": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mid dev": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mid Des": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mid Other": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Senior DEV": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Senior DES": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Senior Other": {
+      "main": [
+        [
+          {
+            "node": "Email Senior Developer7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Json": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Final inputs": {
+      "main": [
+        [
+          {
+            "node": "Level",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Final inputs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8906825d-d4d4-47ba-a2df-b0408fa55c62",
+  "meta": {
+    "instanceId": "781860ce40468cabddb429e5a407cee90642b4e2a9a182b876f99f8b14aa2336"
+  },
+  "id": "1cr47nrFDxBofNa4",
+  "tags": []
+}

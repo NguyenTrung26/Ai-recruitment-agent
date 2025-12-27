@@ -1,0 +1,784 @@
+{
+  "name": "My workflow 6",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -496,
+        48
+      ],
+      "id": "0efcb6c2-241d-48a3-8e7d-f3fbe8b1d52b",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e776060a-72c6-4459-be4c-037401c32a25",
+              "name": "id",
+              "value": "={{ $json.id }}",
+              "type": "number"
+            },
+            {
+              "id": "c7b75415-5d39-4e93-965b-fc5b38454b61",
+              "name": "job_title",
+              "value": "={{ $json.job_title }}",
+              "type": "string"
+            },
+            {
+              "id": "7d9bd744-7265-4c9d-8966-66c5d34b22e8",
+              "name": "apply_link",
+              "value": "={{ $json.apply_link }}",
+              "type": "string"
+            },
+            {
+              "id": "2222a518-1b09-4acb-bda7-96a8254bb414",
+              "name": "scheduled_time",
+              "value": "={{ $json.scheduled_time }}",
+              "type": "string"
+            },
+            {
+              "id": "f5a7b794-1883-43c8-a953-5d284f9cb9b8",
+              "name": "status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            },
+            {
+              "id": "65a30763-8838-4f35-9ee4-c9b5ec0f59bf",
+              "name": "job_desc",
+              "value": "={{ $json.job_desc }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        32,
+        48
+      ],
+      "id": "00344f64-a01e-44a2-acfe-ca5732cd0493",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "bfa8bc9b-abc9-441b-a1ed-ea37d7460e0a",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "todo",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "3c38d155-481e-47a2-be3e-441ef3e4c003",
+              "leftValue": "={{ $json.scheduled_time }}",
+              "rightValue": "={{ $now }}\n",
+              "operator": {
+                "type": "dateTime",
+                "operation": "beforeOrEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        48
+      ],
+      "id": "694be3bf-db56-4a61-8821-ca8911d98699",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Viết bài đăng tuyển dụng Facebook dựa trên thông tin sau:\n\n- Vị trí công việc: {{ $('Edit Fields').item.json['job_title'] }}\n- Mô tả công việc: {{ $('Edit Fields').item.json['job_desc'] }}\n- Link ứng tuyển: {{ $('Edit Fields').item.json['apply_link'] }}\n\nYêu cầu:\n- Ngắn gọn, dễ đọc\n- Có CTA kêu gọi ứng tuyển\n- Phù hợp đăng Facebook\n- Chỉ đưa ra nội dung cho bài đăng, ko cần thêm lời đã tạo thành công\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        400,
+        32
+      ],
+      "id": "2fa360dc-af09-4edd-8415-06e20a74989d",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "ohneEZ1n3Sypcdbo",
+          "name": "Google Gemini(PaLM) Api account 6"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cd144048-d6bf-483e-9612-7e287313b90c",
+              "name": "content.parts[0].text",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        32
+      ],
+      "id": "7d9c0331-eeaf-46c2-a226-33d867e55dcb",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v24.0/962307496958612/feed",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "access_token",
+              "value": "EAAPwSGp1w7sBQZAlCgeKeLJwYj0Oa3AfzeM7dvKz1n40Tsf5rtLY73i5BnmS2Cnu9eZAtXoom6e2MhsaLyuyo5g2O5ZC8soXxT8dMMIxygosGXZBI0r0fHAJIwDjRXdWOqHgORyO0JWkX0seVZCk8aqI1vfRMXISKSZBFL1b0enO2yZAdNvBkPUFDv35RQz0h5t0g8TndWJ"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.content.parts[0].text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        896,
+        32
+      ],
+      "id": "5263dd5a-3477-41d4-9fb7-ea099789f1ce",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "scheduled_jobs",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "status",
+              "condition": "eq",
+              "keyValue": "todo"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        48
+      ],
+      "id": "6398f8bc-4843-4fce-ae9d-51ab67b67426",
+      "name": "Get many rows",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aP5j13HLEwQZR00J",
+          "name": "Supabase account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "scheduled_jobs",
+        "matchType": "allFilters",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('If').item.json.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "status",
+              "fieldValue": "done"
+            },
+            {
+              "fieldId": "posted_time",
+              "fieldValue": "= {{$now}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        32
+      ],
+      "id": "ca7ae04e-ed9f-4635-9d41-dc801042e57d",
+      "name": "Update a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aP5j13HLEwQZR00J",
+          "name": "Supabase account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "create-job",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -208
+      ],
+      "id": "39c579c6-934a-47e6-bbf5-cfdfff173419",
+      "name": "Webhook1",
+      "webhookId": "ccacc961-2819-47f1-b1f4-e5647264dcc7"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dfaa3c19-5bba-4ba9-9e68-05b177068bb3",
+              "name": "body.job_title",
+              "value": "={{ $json.body.job_title }}",
+              "type": "string"
+            },
+            {
+              "id": "cfb8fc19-d454-4344-96bd-addb8934eec5",
+              "name": "body.job_desc",
+              "value": "={{ $json.body.job_desc }}",
+              "type": "string"
+            },
+            {
+              "id": "7190a1fa-f1da-4184-9df1-6a733868ca00",
+              "name": "body.apply_link",
+              "value": "={{ $json.body.apply_link }}",
+              "type": "string"
+            },
+            {
+              "id": "28f87dd6-02a6-492a-8c0c-d1702c6ad7e2",
+              "name": "body.scheduled_time",
+              "value": "={{ $json.body.scheduled_time }}",
+              "type": "string"
+            },
+            {
+              "id": "2ff4d670-ce8b-4e23-aedc-ec3089ccef1a",
+              "name": "body.status",
+              "value": "={{ $json.body.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        -208
+      ],
+      "id": "4cf7b0eb-d285-4f8c-968b-6bd5cc78c16e",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "tableId": "scheduled_jobs",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "job_title",
+              "fieldValue": "={{ $json.body.job_title }}"
+            },
+            {
+              "fieldId": "job_desc",
+              "fieldValue": "={{ $json.body.job_desc }}"
+            },
+            {
+              "fieldId": "apply_link",
+              "fieldValue": "={{ $json.body.apply_link }}"
+            },
+            {
+              "fieldId": "scheduled_time",
+              "fieldValue": "={{ $json.body.scheduled_time }}"
+            },
+            {
+              "fieldId": "status",
+              "fieldValue": "={{ $json.body.status }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        752,
+        -208
+      ],
+      "id": "0b5cf05a-63ba-48bd-be10-94cb6ea70d52",
+      "name": "Create a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aP5j13HLEwQZR00J",
+          "name": "Supabase account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Tạo lịch tuyển dụng thành công\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        960,
+        -208
+      ],
+      "id": "788de3ff-419e-4782-8150-58cfc820b383",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "path": "get-jobs",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -352
+      ],
+      "id": "ac4277a8-2639-4b89-bdda-99b7353ad70d",
+      "name": "Webhook",
+      "webhookId": "ccacc961-2819-47f1-b1f4-e5647264dcc7"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "scheduled_jobs"
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -352
+      ],
+      "id": "d42c4ee2-c0e9-4dc4-90d5-ceda2eb5a367",
+      "name": "Get many rows1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aP5j13HLEwQZR00J",
+          "name": "Supabase account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        752,
+        -352
+      ],
+      "id": "a6d63230-a317-418b-9ebd-4c53035efa65",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update-job",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -496
+      ],
+      "id": "b62a00b3-0cd7-4d4a-a803-bc48147aa823",
+      "name": "Webhook2",
+      "webhookId": "ccacc961-2819-47f1-b1f4-e5647264dcc7"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "scheduled_jobs",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "job_title",
+              "fieldValue": "={{ $json.body.job_title }}"
+            },
+            {
+              "fieldId": "job_desc",
+              "fieldValue": "={{ $json.body.job_desc }}"
+            },
+            {
+              "fieldId": "apply_link",
+              "fieldValue": "={{ $json.body.apply_link }}"
+            },
+            {
+              "fieldId": "scheduled_time",
+              "fieldValue": "={{ $json.body.scheduled_time }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -496
+      ],
+      "id": "b6d7abf4-eb5a-43db-9fd4-6b88bf072d6a",
+      "name": "Update a row1",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aP5j13HLEwQZR00J",
+          "name": "Supabase account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Cập nhật lịch thành công\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        752,
+        -496
+      ],
+      "id": "c690fa28-c5a8-4ba6-9a2a-7552e9cc955f",
+      "name": "Respond to Webhook2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "delete-job",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        336,
+        -624
+      ],
+      "id": "a33c1c25-47eb-44c2-af36-4237154ea95e",
+      "name": "Webhook3",
+      "webhookId": "ccacc961-2819-47f1-b1f4-e5647264dcc7"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={\n  \"success\": true,\n  \"message\": \"Xóa lịch thành công\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        752,
+        -624
+      ],
+      "id": "ecb158b6-1540-408c-af3a-b7a9365f4265",
+      "name": "Respond to Webhook3"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "scheduled_jobs",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $json.body.id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        544,
+        -624
+      ],
+      "id": "19ef62d2-c5c9-419a-ae6c-f6924fa0fc34",
+      "name": "Delete a row",
+      "credentials": {
+        "supabaseApi": {
+          "id": "aP5j13HLEwQZR00J",
+          "name": "Supabase account 5"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get many rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Create a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get many rows1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many rows1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook2": {
+      "main": [
+        [
+          {
+            "node": "Update a row1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row1": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook3": {
+      "main": [
+        [
+          {
+            "node": "Delete a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a row": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "23cb45d3-e309-4418-8c17-9faed1adfadd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6da6eef0b4983ed52a71de8ab82823c94ab7d804f39190d2537dc5679e9636a6"
+  },
+  "id": "zoHD4v5XdQfdTwMT",
+  "tags": []
+}

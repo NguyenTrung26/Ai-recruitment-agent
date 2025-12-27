@@ -30,8 +30,8 @@ export default function AdminPage() {
 
       const data = await response.json();
       // Backend returns { count, candidates } or just array
-      const candidateList = Array.isArray(data) ? data : (data.candidates || []);
-      
+      const candidateList = Array.isArray(data) ? data : data.candidates || [];
+
       if (!Array.isArray(candidateList)) {
         throw new Error("Invalid data format");
       }

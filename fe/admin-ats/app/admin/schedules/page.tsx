@@ -155,13 +155,10 @@ export default function SchedulesPage() {
                 <thead>
                   <tr className="bg-blue-600 dark:bg-blue-800">
                     <th className="px-6 py-3 text-left text-white font-semibold">
-                      ID
+                      Vị trí tuyển
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
-                      Tiêu đề
-                    </th>
-                    <th className="px-6 py-3 text-left text-white font-semibold">
-                      Nội dung
+                      Mô tả
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
                       Thời gian đăng
@@ -170,7 +167,7 @@ export default function SchedulesPage() {
                       Trạng thái
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
-                      Ngày tạo
+                      Link ứng tuyển
                     </th>
                     <th className="px-6 py-3 text-left text-white font-semibold">
                       Hành động
@@ -183,9 +180,6 @@ export default function SchedulesPage() {
                       key={item.id}
                       className="hover:bg-gray-50 dark:hover:bg-slate-700 transition"
                     >
-                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100">
-                        {item.id}
-                      </td>
                       <td className="px-6 py-3 text-gray-900 dark:text-gray-100 font-semibold">
                         {item.title}
                       </td>
@@ -198,9 +192,6 @@ export default function SchedulesPage() {
                       <td className="px-6 py-3">
                         {getStatusBadge(item.status)}
                       </td>
-                      <td className="px-6 py-3 text-gray-600 dark:text-gray-400">
-                        {formatDateTime(item.created_at)}
-                      </td>
                       <td className="px-6 py-3">
                         <a
                           href={item.apply_link}
@@ -210,6 +201,45 @@ export default function SchedulesPage() {
                         >
                           📝 Xem
                         </a>
+                      </td>
+                      <td className="px-6 py-3 text-gray-900 dark:text-gray-100">
+                        <div className="flex items-center gap-3">
+                          <Link
+                            href={`/admin/schedules/${item.id}`}
+                            className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                          >
+                            📝 Xem
+                          </Link>
+                          <Link
+                            href={`/admin/schedules/${item.id}`}
+                            className="text-orange-500 hover:text-orange-700 dark:text-orange-300 dark:hover:text-orange-200"
+                          >
+                            ✏️ Sửa
+                          </Link>
+                          <button
+                            onClick={() => {
+                              // Confirmation before delete
+                              if (
+                                window.confirm("Bạn có chắc muốn xóa lịch này?")
+                              ) {
+                                fetch(`/api/schedules/${item.id}`, {
+                                  method: "DELETE",
+                                })
+                                  .then(() => loadSchedules())
+                                  .catch((err) =>
+                                    setError(
+                                      err instanceof Error
+                                        ? err.message
+                                        : "Không thể xóa"
+                                    )
+                                  );
+                              }
+                            }}
+                            className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                          >
+                            ❌ Xóa
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
